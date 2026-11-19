@@ -120,6 +120,12 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - Pendiente menor: Jest de mobile avisa que un worker "no terminó limpio" (temporizadores vivos, probablemente animaciones de Paper). No afecta resultados; `--detectOpenHandles` se cuelga y no dio información. Se agregó limpieza de los clientes de TanStack Query después de cada test.
 - Tests: backend 142, mobile 51.
 
+### Historia 7 — vista del organizador
+- `GET /eventos/{id}/compras`: solo el organizador dueño; compras con estado y cupo disponible por tipo (PENDIENTE, CONFIRMADA y UTILIZADA restan; CANCELADA y REEMBOLSADA no).
+- Un test falló por un error del propio test: al avanzar el reloj 100 minutos la PENDIENTE vencía, que es el comportamiento correcto. Se corrigió el test, no el código.
+- Mobile: pantalla con barras de disponibilidad por tipo y la lista de compras por comprador; cada una abre el detalle (donde el organizador marca como utilizada y, desde la Historia 8, chatea).
+- Cierra las historias P2. Tests: backend 146, mobile 52.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

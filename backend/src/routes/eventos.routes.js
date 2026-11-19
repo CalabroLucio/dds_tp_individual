@@ -14,6 +14,12 @@ export function crearRutasEventos({ services, middleware }) {
   router.post('/', soloOrganizador, validar({ body: nuevoEventoSchema }), controller.crear);
   // '/mios' va antes de '/:eventoId' para que no se interprete como un id.
   router.get('/mios', soloOrganizador, controller.misEventos);
+  router.get(
+    '/:eventoId/compras',
+    soloOrganizador,
+    validar({ params: eventoIdParams }),
+    controller.comprasDeEvento,
+  );
   router.get('/:eventoId', autenticar, validar({ params: eventoIdParams }), controller.detalle);
 
   return router;

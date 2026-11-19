@@ -246,14 +246,14 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 ### Tests (escribir primero; deben fallar)
 
-- [ ] T076 [P] [US7] Test de integración `backend/test/integration/eventos.compras.test.js`: lista de compras con estado, disponibilidad por tipo (PENDIENTE, CONFIRMADA y UTILIZADA restan; CANCELADA y REEMBOLSADA no), evento de otro organizador → 403, comprador → 403, contra el contrato
-- [ ] T077 [P] [US7] Test `mobile/__tests__/organizador/eventoCompras.test.js`: compras con chips de estado y resumen de cupos por tipo
+- [X] T076 [P] [US7] Test de integración `backend/test/integration/eventos.compras.test.js`: lista de compras con estado, disponibilidad por tipo (PENDIENTE, CONFIRMADA y UTILIZADA restan; CANCELADA y REEMBOLSADA no), evento de otro organizador → 403, comprador → 403, contra el contrato
+- [X] T077 [P] [US7] Test `mobile/__tests__/organizador/eventoCompras.test.js`: compras con chips de estado y resumen de cupos por tipo
 
 ### Implementación
 
-- [ ] T078 [US7] Extender `backend/src/services/eventos.service.js` (`comprasDeEvento` con verificación de dueño) y agregar `GET /eventos/:eventoId/compras` a `backend/src/routes/eventos.routes.js` y el controller, hasta pasar T076
-- [ ] T079 [P] [US7] Crear `mobile/src/components/ResumenCupos.js` y `mobile/src/hooks/useComprasDeEvento.js`
-- [ ] T080 [US7] Crear `mobile/src/app/evento/[id]/compras.js` y enlazarla desde `mobile/src/app/(organizador)/mis-eventos.js`, hasta pasar T077
+- [X] T078 [US7] Extender `backend/src/services/eventos.service.js` (`comprasDeEvento` con verificación de dueño) y agregar `GET /eventos/:eventoId/compras` a `backend/src/routes/eventos.routes.js` y el controller, hasta pasar T076
+- [X] T079 [P] [US7] Crear `mobile/src/components/ResumenCupos.js` y `mobile/src/hooks/useComprasDeEvento.js`
+- [X] T080 [US7] Crear `mobile/src/app/evento/[id]/compras.js` y enlazarla desde `mobile/src/app/(organizador)/mis-eventos.js`, hasta pasar T077
 
 **Checkpoint**: US7 funcional. Commit de hito (cierra las historias P2).
 

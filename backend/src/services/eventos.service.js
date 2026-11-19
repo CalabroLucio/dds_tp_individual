@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { validarFechaFutura } from '../domain/evento.js';
 import { buscarEventos } from '../domain/busqueda.js';
+import { estaVencida, QUIEN_SISTEMA, transicionar } from '../domain/compra.js';
 import { errores } from '../errors/index.js';
 
 export function crearEventosService({ repos, reloj, presentacion }) {
@@ -58,6 +59,26 @@ export function crearEventosService({ repos, reloj, presentacion }) {
         categoriaPorId: repos.categorias.porId,
         puntajeDe,
       }).map((e) => presentacion.eventoResumen(e, usuario));
+    },
+
+    // FR-019: solo el organizador dueño ve las compras de su evento y el cupo disponible por tipo.
+    comprasDeEvento(organizador, eventoId) {
+      const evento = obtener(eventoId);
+      if (evento.organizadorId !== organizador.id) {
+        throw errores.noAutorizado('Solo el organizador del evento puede ver sus compras');
+      }
+      const ahora = reloj.ahora();
+      const compras = repos.compras.listarPorEvento(evento.id);
+      for (const compra of compras) {
+        if (estaVencida(compra, ahora)) transicionar(compra, 'CANCELADA', QUIEN_SISTEMA, ahora);
+      }
+      return {
+        evento: { id: evento.id, nombre: evento.nombre, fecha: evento.fecha.toISOString() },
+        tiposEntrada: evento.tiposEntrada.map((t) => presentacion.tipoEntrada(t, compras)),
+        compras: compras
+          .sort((a, b) => b.creadaEn - a.creadaEn)
+          .map((c) => presentacion.compra(c, organizador)),
+      };
     },
 
     detalle(eventoId, usuario) {

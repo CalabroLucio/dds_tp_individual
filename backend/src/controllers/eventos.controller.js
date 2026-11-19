@@ -9,6 +9,9 @@ export function crearEventosController({ eventosService }) {
     misEventos: (req, res) => {
       res.json(eventosService.misEventos(req.usuario));
     },
+    comprasDeEvento: (req, res) => {
+      res.json(eventosService.comprasDeEvento(req.usuario, req.datos.params.eventoId));
+    },
     detalle: (req, res) => {
       res.json(eventosService.detalle(req.datos.params.eventoId, req.usuario));
     },

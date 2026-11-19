@@ -23,6 +23,13 @@ export const useMisEventos = () => useQuery({ queryKey: claves.misEventos, query
 export const useEvento = (id) =>
   useQuery({ queryKey: claves.evento(id), queryFn: () => eventosApi.detalle(id), enabled: Boolean(id) });
 
+export const useComprasDeEvento = (id) =>
+  useQuery({
+    queryKey: ['compras', 'evento', id],
+    queryFn: () => eventosApi.comprasDeEvento(id),
+    enabled: Boolean(id),
+  });
+
 export function useCrearEvento() {
   const queryClient = useQueryClient();
   return useMutation({
