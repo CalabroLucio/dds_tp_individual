@@ -62,7 +62,7 @@ Rationale: la conclusión del video evalúa ventajas, desventajas y reflexión c
   el middleware `requerirRol`.
 - Estados de compra: PENDIENTE→CONFIRMADA (pago simulado), PENDIENTE→CANCELADA (comprador o
   expiración), CONFIRMADA→REEMBOLSADA (comprador antes del cutoff), CONFIRMADA→UTILIZADA
-  (organizador). Estados finales: UTILIZADA, CANCELADA y REEMBOLSADA; no admiten transiciones.
+  (organizador desde el cutoff, o el sistema 24 h después del inicio del evento). Estados finales: UTILIZADA, CANCELADA y REEMBOLSADA; no admiten transiciones.
 - El cutoff de cancelación (30 min antes del evento) se valida al momento del pedido, nunca por
   cron, y es una constante configurable. Las compras PENDIENTES expiran a los 15 minutos mediante
   un job con `setInterval` que libera el cupo.
@@ -93,4 +93,4 @@ cada revisión de implementación MUST verificar el cumplimiento de los principi
 violaciones MUST justificarse explícitamente o corregirse. Usar `docs/ai-log.md` como guía de
 contexto y decisiones durante el desarrollo.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-19 | **Last Amended**: 2026-11-19
+**Version**: 1.0.1 | **Ratified**: 2026-11-19 | **Last Amended**: 2026-11-19

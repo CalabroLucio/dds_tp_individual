@@ -8,6 +8,15 @@
 
 **Input**: User description: "AI Ticket It: plataforma móvil de venta de entradas para eventos, con rol Organizador y rol Comprador. Una única spec con user stories priorizadas (P1: crear eventos, buscar, comprar y pagar, ver mis compras; P2: cancelar/reembolsar, marcar utilizada, vista del organizador por evento; P3: chat por compra, reseñas, favoritos). Flujo de demo: comprar → pagar → chat → cancelar/reseñar."
 
+## Clarifications
+
+### Session 2026-11-19
+
+- Q: ¿Cómo se decide que un pago simulado falle? → A: El comprador elige un medio de pago simulado; uno (por ejemplo "Tarjeta rechazada") siempre es rechazado y los demás siempre se aprueban.
+- Q: ¿Qué pasa con una compra CONFIRMADA cuyo evento ya terminó y nadie la marcó como UTILIZADA? → A: Dos vías: el organizador puede marcarla UTILIZADA a mano desde el límite de cancelación, y el sistema la pasa a UTILIZADA automáticamente 24 horas después del inicio del evento (valor configurable). Eventos cancelados o cortados a mitad quedan como limitación conocida (ver Assumptions).
+- Q: ¿Hasta cuándo se pueden comprar entradas de un evento? → A: Hasta el inicio del evento; si faltan menos de 30 minutos (ya pasó el límite de cancelación), la app avisa antes de confirmar que esa compra no se podrá cancelar.
+- Q: ¿Hay un máximo de entradas por compra? → A: Sí, 10 entradas por compra (valor configurable); si el cupo disponible es menor, vale el menor de los dos.
+
 ## User Scenarios & Testing *(mandatory)*
 
 AI Ticket It conecta a **organizadores**, que publican eventos y venden entradas, con **compradores**, que
@@ -90,9 +99,11 @@ disponible baja a 8, que la compra queda PENDIENTE y que, tras pagar, queda CONF
 
 1. **Given** un tipo de entrada con cupo disponible 10, **When** el comprador compra 2, **Then** se crea una
    compra PENDIENTE por el total (precio × cantidad) y el cupo disponible pasa a 8.
-2. **Given** una compra PENDIENTE, **When** el pago se aprueba, **Then** la compra pasa a CONFIRMADA.
-3. **Given** una compra PENDIENTE, **When** el pago falla, **Then** la compra sigue PENDIENTE, el cupo sigue
-   reservado y el comprador puede reintentar el pago.
+2. **Given** una compra PENDIENTE, **When** el comprador paga con un medio de pago simulado que se aprueba,
+   **Then** la compra pasa a CONFIRMADA.
+3. **Given** una compra PENDIENTE, **When** el comprador paga con el medio de pago simulado que siempre es
+   rechazado (por ejemplo "Tarjeta rechazada"), **Then** el pago falla, la compra sigue PENDIENTE, el cupo
+   sigue reservado y el comprador puede reintentar con otro medio de pago.
 4. **Given** una compra PENDIENTE sin pagar, **When** pasan 15 minutos desde su creación, **Then** la compra
    pasa a CANCELADA por expiración y el cupo reservado se libera.
 5. **Given** un tipo de entrada con cupo disponible 3, **When** el comprador intenta comprar 4, **Then** el
@@ -104,6 +115,13 @@ disponible baja a 8, que la compra queda PENDIENTE y que, tras pagar, queda CONF
    **Then** el sistema lo impide.
 8. **Given** una cantidad menor a 1 o no entera, **When** el comprador intenta comprar, **Then** el sistema
    rechaza la solicitud.
+9. **Given** un tipo de entrada con cupo disponible 30, **When** el comprador intenta comprar 11 entradas,
+   **Then** el sistema rechaza la compra e informa que el máximo por compra es 10.
+10. **Given** un evento que empieza dentro de 20 minutos con cupo disponible, **When** el comprador va a
+   confirmar la compra, **Then** la app le avisa que esa compra ya no se podrá cancelar y, si confirma, la
+   compra se crea normalmente.
+11. **Given** un evento cuya hora de inicio ya pasó, **When** el comprador intenta comprar, **Then** el
+    sistema rechaza la compra.
 
 ---
 
@@ -129,7 +147,9 @@ cada una y los días restantes en las confirmadas.
    muestra que el evento es hoy.
 4. **Given** una compra en un estado distinto de CONFIRMADA, **When** el comprador la ve, **Then** no se
    muestra el conteo de días.
-5. **Given** un comprador, **When** abre "Mis compras", **Then** solo ve sus propias compras.
+5. **Given** una compra CONFIRMADA de un evento que ya comenzó y aún no fue marcada como utilizada, **When**
+   el comprador la ve, **Then** se muestra "Evento realizado" en lugar de un conteo de días negativo.
+6. **Given** un comprador, **When** abre "Mis compras", **Then** solo ve sus propias compras.
 
 ---
 
@@ -162,11 +182,13 @@ REEMBOLSADA, cupo liberado y registro del cambio de estado.
 
 ---
 
-### User Story 6 - El organizador marca una entrada como utilizada (Priority: P2)
+### User Story 6 - Las entradas pasan a utilizadas, a mano o automáticamente (Priority: P2)
 
-Cuando el evento está por comenzar o ya comenzó, el organizador marca una compra CONFIRMADA como UTILIZADA
-(la persona asistió). Esto solo es posible desde el límite de cancelación (30 minutos antes) en adelante, de
-modo que cancelar y utilizar nunca se superpongan.
+Cuando el evento está por comenzar o ya comenzó, el organizador puede marcar una compra CONFIRMADA como
+UTILIZADA (la persona asistió). Esto solo es posible desde el límite de cancelación (30 minutos antes) en
+adelante, de modo que cancelar y utilizar nunca se superpongan. Si nadie la marca, el sistema pasa la compra
+CONFIRMADA a UTILIZADA automáticamente 24 horas después del inicio del evento, para que ninguna compra
+quede confirmada para siempre y se habilite la reseña.
 
 **Why this priority**: habilita las reseñas y cierra el ciclo de vida de la compra.
 
@@ -183,6 +205,11 @@ utilizada como organizador y verificar el estado; intentarlo con un evento de ma
    utilizada, **Then** el sistema lo rechaza.
 4. **Given** una compra de un evento de otro organizador, **When** un organizador intenta marcarla como
    utilizada, **Then** el sistema lo rechaza.
+5. **Given** una compra CONFIRMADA que nadie marcó como utilizada, **When** pasan 24 horas desde el inicio
+   del evento, **Then** el sistema la pasa a UTILIZADA y el cambio queda registrado como originado por el
+   sistema.
+6. **Given** una compra CONFIRMADA de un evento que empezó hace menos de 24 horas, **When** su organizador la
+   marca como utilizada, **Then** pasa a UTILIZADA (el marcado manual sigue disponible después del inicio).
 
 ---
 
@@ -346,7 +373,10 @@ la lista se actualiza.
 **Compras y pago**
 
 - **FR-011**: El comprador MUST poder comprar eligiendo un evento, un tipo de entrada y una cantidad entera
-  mayor o igual a 1, sin superar el cupo disponible; el total MUST ser precio × cantidad.
+  mayor o igual a 1, sin superar el cupo disponible ni un máximo de 10 entradas por compra (configurable);
+  el total MUST ser precio × cantidad. La compra MUST
+  permitirse hasta el inicio del evento; si faltan menos de 30 minutos (límite de cancelación), el sistema
+  MUST informar al comprador, antes de confirmar, que la compra no podrá cancelarse.
 - **FR-012**: Un organizador MUST NOT poder comprar entradas de eventos propios.
 - **FR-013**: El cupo disponible de un tipo de entrada MUST ser el cupo total menos las entradas de sus compras
   PENDIENTES, CONFIRMADAS y UTILIZADAS. El cupo MUST descontarse al crear la compra y liberarse cuando esta
@@ -355,8 +385,10 @@ la lista se actualiza.
 - **FR-014**: El estado de una compra MUST ser uno de PENDIENTE, CONFIRMADA, UTILIZADA, CANCELADA o
   REEMBOLSADA, con exclusivamente estas transiciones: PENDIENTE→CONFIRMADA, PENDIENTE→CANCELADA,
   CONFIRMADA→REEMBOLSADA y CONFIRMADA→UTILIZADA. UTILIZADA, CANCELADA y REEMBOLSADA son estados finales.
-- **FR-015**: El comprador MUST poder pagar una compra PENDIENTE mediante un pago simulado. Si se aprueba, la
-  compra pasa a CONFIRMADA; si falla, la compra sigue PENDIENTE y MUST poder reintentarse.
+- **FR-015**: El comprador MUST poder pagar una compra PENDIENTE eligiendo un medio de pago simulado. El
+  resultado MUST ser determinista según el medio elegido: al menos uno (por ejemplo "Tarjeta rechazada")
+  MUST ser siempre rechazado y los demás MUST ser siempre aprobados. Si se aprueba, la compra pasa a
+  CONFIRMADA; si falla, la compra sigue PENDIENTE y MUST poder reintentarse con cualquier medio.
 - **FR-016**: Una compra PENDIENTE MUST pasar a CANCELADA automáticamente a los 15 minutos de su creación si
   no fue pagada, liberando el cupo.
 - **FR-017**: Cada cambio de estado MUST registrarse con el nuevo estado, quién lo originó (comprador,
@@ -376,7 +408,9 @@ la lista se actualiza.
 - **FR-021**: El sistema MUST validar el límite de cancelación en el momento de la solicitud, no mediante un
   proceso periódico.
 - **FR-022**: El organizador del evento MUST poder marcar una compra CONFIRMADA como UTILIZADA desde el límite
-  de cancelación (30 minutos antes) en adelante, y MUST NOT poder hacerlo antes.
+  de cancelación (30 minutos antes) en adelante, y MUST NOT poder hacerlo antes. Además, el sistema MUST
+  pasar automáticamente a UTILIZADA toda compra CONFIRMADA que siga sin marcar 24 horas después del inicio
+  del evento (plazo configurable), registrando el cambio como originado por el sistema.
 
 **Chat**
 
@@ -447,13 +481,17 @@ la lista se actualiza.
 
 - Los usuarios existen de antemano en los datos de ejemplo; el registro de cuentas nuevas está fuera del
   alcance. Cada usuario tiene un único rol fijo.
-- El pago es completamente simulado (sin dinero ni pasarela real); el sistema puede configurarse para que
-  un pago falle y así demostrar el reintento. El reembolso también es simulado: solo cambia el estado.
+- El pago es completamente simulado (sin dinero ni pasarela real); el resultado depende únicamente del medio
+  de pago simulado elegido, sin azar. El reembolso también es simulado: solo cambia el estado.
 - Los datos viven únicamente en memoria: al reiniciar, vuelven a los datos de ejemplo. No hay recuperación
   de datos entre ejecuciones.
 - Una compra es por un único tipo de entrada; para varios tipos se realizan varias compras.
-- Las entradas no tienen código QR ni validación en puerta: el organizador marca manualmente cada compra
-  como UTILIZADA.
+- Las entradas no tienen código QR ni validación en puerta: UTILIZADA la marca el organizador a mano o el
+  sistema automáticamente 24 horas después del inicio del evento (plazo configurable).
+- Limitación conocida: el sistema no modela eventos cancelados a último momento ni cortados a mitad. Con el
+  pasaje automático, los compradores de un evento así quedarían con compras UTILIZADA, sin reembolso y con
+  derecho a reseñar. Queda como mejora futura (por ejemplo, cancelación de evento por el organizador con
+  reembolso masivo) y se registra en `docs/ai-log.md`.
 - Los eventos no se editan ni se cancelan una vez publicados; modificar o eliminar eventos está fuera del
   alcance.
 - El límite de cancelación (30 minutos) y la expiración de compras pendientes (15 minutos) son valores
