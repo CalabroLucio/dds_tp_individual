@@ -327,15 +327,15 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 **Propósito**: datos de demostración, flujo del video, documentación y calidad.
 
-- [ ] T097 [P] Test de integración `backend/test/integration/seed.test.js` (debe fallar): el seed completo cumple FR-029 — ≥ 2 organizadores y 3 compradores; eventos en ~20 min, mañana y +20 días; eventos pasados con compras UTILIZADAS y reseñas; puntajes distintos entre organizadores; compras CONFIRMADAS sobre el evento de ~20 min
-- [ ] T098 Ampliar `backend/src/seed/seed.js` con los eventos, compras, reseñas y favoritos de demostración con fechas relativas a "ahora" (cuidando que las reglas de data-model.md · `Evento.fecha` solo apliquen a la creación, no al seed), hasta pasar T097
-- [ ] T099 [P] Test de cobertura del contrato `backend/test/integration/cobertura-contrato.test.js`: toda operación de `openapi.yaml` tiene una ruta implementada (ninguna responde 404 de ruta inexistente)
-- [ ] T100 Test E2E `backend/test/e2e/flujo-demo.e2e.test.js` con el servidor real: comprar → pagar (rechazo y reintento) → chat entre ambos roles → cancelar; y variante comprar → pagar → utilizar → reseñar; incluye la prueba de 50 solicitudes simultáneas sobre HTTP real
-- [ ] T101 [P] Crear `README.md` en la raíz (repo público): qué es el proyecto, stack, cómo correrlo (enlazando [quickstart.md](quickstart.md)), usuarios del seed y estructura
-- [ ] T102 [P] Actualizar `.claude/CLAUDE.md` con comandos, arquitectura en capas, enlace a la constitution y reglas de commit (una línea, sin `Co-Authored-By`, por hito)
-- [ ] T103 Pasada de calidad: `npm run lint` y `npm run format` en ambos paquetes sin errores, y `npm test` + `npm run test:e2e` en verde
+- [X] T097 [P] Test de integración `backend/test/integration/seed.test.js` (debe fallar): el seed completo cumple FR-029 — ≥ 2 organizadores y 3 compradores; eventos en ~20 min, mañana y +20 días; eventos pasados con compras UTILIZADAS y reseñas; puntajes distintos entre organizadores; compras CONFIRMADAS sobre el evento de ~20 min
+- [X] T098 Ampliar `backend/src/seed/seed.js` con los eventos, compras, reseñas y favoritos de demostración con fechas relativas a "ahora" (cuidando que las reglas de data-model.md · `Evento.fecha` solo apliquen a la creación, no al seed), hasta pasar T097
+- [X] T099 [P] Test de cobertura del contrato `backend/test/integration/cobertura-contrato.test.js`: toda operación de `openapi.yaml` tiene una ruta implementada (ninguna responde 404 de ruta inexistente)
+- [X] T100 Test E2E `backend/test/e2e/flujo-demo.e2e.test.js` con el servidor real: comprar → pagar (rechazo y reintento) → chat entre ambos roles → cancelar; y variante comprar → pagar → utilizar → reseñar; incluye la prueba de 50 solicitudes simultáneas sobre HTTP real
+- [X] T101 [P] Crear `README.md` en la raíz (repo público): qué es el proyecto, stack, cómo correrlo (enlazando [quickstart.md](quickstart.md)), usuarios del seed y estructura
+- [X] T102 [P] Actualizar `.claude/CLAUDE.md` con comandos, arquitectura en capas, enlace a la constitution y reglas de commit (una línea, sin `Co-Authored-By`, por hito)
+- [X] T103 Pasada de calidad: `npm run lint` y `npm run format` en ambos paquetes sin errores, y `npm test` + `npm run test:e2e` en verde
 - [ ] T104 **(manual)** Recorrer los 12 escenarios de [quickstart.md](quickstart.md) §5 en el celular y corregir lo que falle
-- [ ] T105 Cerrar `docs/ai-log.md` (las decisiones ya se registraron en cada checkpoint) con la sección de reflexión sobre IA (ventajas, desventajas, dificultades, aprendizajes) para la conclusión del video; el guion del video queda en `.local/guion-video.md` (no se sube al repo)
+- [X] T105 Cerrar `docs/ai-log.md` (las decisiones ya se registraron en cada checkpoint) con la sección de reflexión sobre IA (ventajas, desventajas, dificultades, aprendizajes) para la conclusión del video; el guion del video queda en `.local/guion-video.md` (no se sube al repo)
 
 ---
 

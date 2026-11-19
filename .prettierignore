@@ -11,3 +11,5 @@ specs/
 docs/
 mobile/android/
 mobile/ios/
+.mcp.json
+mobile/assets/

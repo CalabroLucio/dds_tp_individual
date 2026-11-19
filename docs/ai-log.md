@@ -57,14 +57,15 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 ## Estado actual
 - [x] Herramientas instaladas (Spec Kit, CodeGraph, Context7), repo git inicializado.
 - [x] Reiniciar Claude Code para cargar MCPs/hook.
-- [x] `/speckit-constitution` v1.0.0 ratificada (2026-11-19). Falta borrar el Sync Impact Report del comienzo antes de commitear.
+- [x] `/speckit-constitution` v1.0.0 ratificada (2026-11-19), v1.0.1 tras clarify.
 - [x] Consigna guardada en `.local/consigna.md` (ignorada por git) y `.gitignore` creado.
 - [x] `/speckit-specify` (10 user stories P1/P2/P3) y `/speckit-clarify` (4 decisiones).
 - [x] `/speckit-plan`: research, data-model, contracts/openapi.yaml y quickstart.
 - [x] `/speckit-tasks`: 105 tareas en 13 fases (tests primero).
 - [x] `/speckit-analyze`: 12 hallazgos (2 críticos de constitution, 1 alto, 3 medios, 6 bajos), todos corregidos en spec, data-model y tasks.
-- [ ] `/speckit-implement` con Opus.
-- [ ] Skills propias, `CLAUDE.md` raíz, `codegraph init -i` tras el scaffold.
+- [x] `/speckit-implement`: 10 historias implementadas test-first, seed de demostración, E2E del flujo del video, README y guía en `.claude/CLAUDE.md`.
+- [ ] Pendientes del autor: instalar Expo Go SDK 57 y activar WSL mirrored (T003), verificar desde el celular (T028), `codegraph init -i` (T029), recorrido manual de los 12 escenarios del quickstart (T104) y grabación del video.
+- [ ] Opcional: skills propias del proyecto y pruebas de interfaz con Maestro.
 
 ## Implementación — registro por fase
 
@@ -142,6 +143,17 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - Mobile: corazón en las tarjetas del catálogo, en el detalle y en la nueva pestaña "Favoritos". El botón usa `key` con el valor del servidor para resincronizarse cuando cambia la lista.
 - **Las 10 historias están completas.** Tests: backend 162, mobile 58.
 
+### Fase final — seed, contrato y flujo del video
+- Seed de demostración con fechas relativas al arranque: 8 eventos (uno en ~20 minutos, uno mañana, uno en 20 días, dos pasados), 11 compras en todos los estados, reseñas que dan puntajes distintos (4,5 y 3,5), un chat iniciado y favoritos. Las compras sembradas pasan por la misma máquina de estados que las reales.
+- Test de cobertura: las 21 operaciones del contrato tienen ruta implementada.
+- E2E del flujo del video sobre el servidor real con el seed: comprar → rechazo y reintento de pago → chat → cancelar con reembolso; y comprar con aviso de no cancelable → pagar → marcar utilizada → reseñar. Más la prueba de 50 compras concurrentes por HTTP real.
+- El test del seed se escribió antes que el seed, pero se corrió recién con la implementación hecha (no se vio en rojo): desvío menor de test-first.
+- Totales: backend 190 tests + 4 E2E; mobile 58 tests; lint limpio; la app compila completa para Android.
+
+### Cierre de la implementación
+- README para el repo público, guía de trabajo del proyecto en `.claude/CLAUDE.md` (comandos, capas, test-first, reglas de commit) y borrador del guion del video en `.local/` (no se sube).
+- Pasada final de calidad: formato, lint, 190 tests de backend, 4 E2E y 58 de mobile en verde; la app compila para Android.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.
@@ -149,3 +161,43 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - `/speckit-analyze` encontró contradicciones que la IA introdujo al escribir los propios artefactos: el tope de 10 entradas figuraba como 400 en el modelo y como 409 en el contrato, y la constitution exigía validar params y registrar el log "en el momento", pero las tareas no lo reflejaban. Lección: un paso de verificación cruzada automática detecta inconsistencias que una sola pasada de generación no ve.
 - Error de la IA: commiteó con `git add -A` un APK de 200 MB que estaba en la raíz del repo. Se detectó antes del push, se reescribió el commit local y se agregó `*.apk` al `.gitignore`. Lección: revisar qué entra en cada commit en vez de agregar todo a ciegas.
 - Decisión de ritmo del autor: desarrollar primero backend y tests, y dejar la configuración del celular (Expo Go, red mirrored) para antes de las pantallas mobile.
+
+## Reflexión sobre el uso de IA — borrador para la conclusión del video
+
+Borrador armado con lo que quedó registrado en este log. La valoración personal es del autor: conviene reescribirla
+con sus palabras.
+
+**Ventajas observadas**
+- Velocidad con estructura: Spec Kit obligó a pasar por spec → clarify → plan → tasks → analyze antes de escribir
+  código, y la IA generó cada artefacto en minutos. El análisis cruzado encontró contradicciones reales (400 vs 409
+  en el tope de entradas) antes de que se convirtieran en bugs.
+- Test-first sostenido: con los tests escritos antes, la IA tuvo un criterio objetivo de "terminado". Varios errores
+  se detectaron por un test en rojo (nombre accesible de los botones con ícono, un test que avanzaba el reloj y hacía
+  vencer una compra).
+- Verificación de datos externos: versiones de Expo SDK, cambios de React Native Testing Library v14 y opciones de
+  red de WSL se consultaron en la documentación (Context7) antes de usarlas, en lugar de confiar en la memoria del
+  modelo.
+- Decisiones explicables: cada desvío quedó justificado (cutoff de 30 minutos, UTILIZADA automática, carpetas por rol
+  en vez de grupos), lo que facilita defenderlas.
+
+**Desventajas y riesgos**
+- La IA también se equivoca con confianza: recomendó TypeScript y Vitest sin mirar el TP anterior, sugirió un comando
+  inexistente (`claude mcp show`) y commiteó un APK de 200 MB con `git add -A`. Todo se detectó, pero requirió
+  revisión humana.
+- El volumen de código generado es grande; entenderlo para explicarlo en el video exige leerlo, no solo ejecutarlo.
+- Algunas cosas no se pueden verificar sin el entorno real: la app nunca se abrió en el celular durante el desarrollo
+  (solo tests y compilación del bundle), y el aviso de temporizadores vivos en Jest quedó sin diagnosticar.
+
+**Dificultades**
+- Entorno: WSL en modo NAT impide que el celular llegue al backend; Expo Go soporta un solo SDK; dos cuentas de GitHub
+  en la misma máquina.
+- Diferencias de versiones respecto de lo que el modelo "recordaba" (SDK 58 vigente, RNTL v14 asíncrono).
+
+**Aprendizajes**
+- Darle a la IA un contexto escrito y verificable (constitution, contrato, tareas con rutas de archivo) mejora mucho
+  la calidad y la consistencia del resultado.
+- Las herramientas de verificación automática (tests, lint, validación contra el contrato, análisis cruzado) son lo
+  que vuelve confiable el trabajo con IA.
+- El criterio sigue siendo humano: elegir el flujo, el alcance, las reglas que la consigna no define y qué aceptar o
+  rechazar de cada propuesta.
+

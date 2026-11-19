@@ -2,11 +2,13 @@ import { crearContexto } from '../../../src/contexto.js';
 import { crearApp } from '../../../src/app.js';
 import { cargarReglas } from '../../../src/config/reglas.js';
 import { cargarSeedBase, PASSWORD_DEMO } from '../../../src/seed/seed.js';
+import { cargarSeedDemo } from '../../../src/seed/demo.js';
 
 // Levanta el servidor real en un puerto efímero para los E2E (viajes completos con fetch).
-export async function levantarServidor({ reglas = {}, reloj } = {}) {
+export async function levantarServidor({ reglas = {}, reloj, seedCompleto = false } = {}) {
   const contexto = crearContexto({ reglas: cargarReglas({}, reglas), ...(reloj ? { reloj } : {}) });
   const datos = cargarSeedBase(contexto);
+  if (seedCompleto) cargarSeedDemo(contexto, datos);
   const app = crearApp(contexto);
 
   const servidor = await new Promise((resolve) => {
