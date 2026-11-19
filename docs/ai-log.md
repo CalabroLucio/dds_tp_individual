@@ -66,6 +66,17 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - [ ] `/speckit-implement` con Opus.
 - [ ] Skills propias, `CLAUDE.md` raíz, `codegraph init -i` tras el scaffold.
 
+## Implementación — registro por fase
+
+### Fase 1 y 2 (setup y base) — 2026-11-19
+- Verificado al instalar: `create-expo-app --template default@sdk-57` genera SDK 57 (riesgo R1 cerrado). La plantilla es TypeScript y se convirtió a JS sin problemas (R2 cerrado). `expo-doctor`: 21/21.
+- Versiones reales: Express 5.3, Zod 4.6 (mensajes en español con `z.locales.es()`), Jest 30 en backend y 29 en mobile (lo fija jest-expo), React Native Testing Library **v14** (el plan decía v13): en v14 `render` y `fireEvent` son asíncronos y se usan con `await`. Se consultó la guía de migración antes de escribir tests.
+- Desvío del plan: las pantallas por rol van en carpetas `comprador/` y `organizador/` en lugar de grupos `(comprador)`/`(organizador)`, porque con grupos ambas pantallas `perfil` tendrían la misma URL `/perfil` y expo-router las haría chocar.
+- Contexto con inyección de dependencias (`crearContexto`): los tests arman la app con reloj y reglas propios, sin mocks globales.
+- `validarRespuesta(ruta, metodo, respuesta)` recibe la respuesta de supertest entera (status + body) en vez de status y cuerpo por separado: menos ruido en cada test.
+- Sin celular se verificó igual que la app compila completa con `expo export --platform android`.
+- Tests: backend 27, mobile 25, todos en verde, lint limpio. Pendientes del autor: T003 y T028 (celular) y T029 (`codegraph init -i`, ya hay código).
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.
