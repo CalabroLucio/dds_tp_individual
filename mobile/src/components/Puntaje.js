@@ -1,7 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 import { Icon, Text } from 'react-native-paper';
 
-const AMARILLO = '#F5A623';
+import { colores } from '../theme/tema';
+
+const AMARILLO = colores.estrella;
 
 // Puntaje del organizador (promedio de sus reseñas), tal como lo calcula el backend.
 export function Puntaje({ puntaje, cantidad, tamano = 'chico' }) {

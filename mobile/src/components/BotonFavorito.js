@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { IconButton } from 'react-native-paper';
 import { useAlternarFavorito } from '../hooks/useFavoritos';
 
-const ROJO = '#D7263D';
+import { colores } from '../theme/tema';
+
+const ROJO = colores.error;
 
 export function BotonFavorito({ eventoId, esFavorito }) {
   const [marcado, setMarcado] = useState(esFavorito);

@@ -3,9 +3,11 @@ import { router } from 'expo-router';
 import { useFavoritos } from '../../hooks/useFavoritos';
 import { TarjetaEvento } from '../../components/TarjetaEvento';
 import { BotonFavorito } from '../../components/BotonFavorito';
+import { Encabezado } from '../../components/Encabezado';
 import { Cargando } from '../../components/Cargando';
 import { MensajeError } from '../../components/MensajeError';
 import { EstadoVacio } from '../../components/EstadoVacio';
+import { ESPACIO_TAB } from '../../theme/tema';
 
 export default function PantallaFavoritos() {
   const favoritos = useFavoritos();
@@ -17,6 +19,7 @@ export default function PantallaFavoritos() {
       data={favoritos.data}
       keyExtractor={(e) => e.id}
       contentContainerStyle={estilos.lista}
+      ListHeaderComponent={<Encabezado antetitulo="Guardados" titulo="Favoritos" />}
       refreshing={favoritos.isRefetching}
       onRefresh={favoritos.refetch}
       ListEmptyComponent={
@@ -38,5 +41,5 @@ export default function PantallaFavoritos() {
 }
 
 const estilos = StyleSheet.create({
-  lista: { padding: 16, gap: 12, flexGrow: 1 },
+  lista: { paddingHorizontal: 16, gap: 12, flexGrow: 1, paddingBottom: ESPACIO_TAB },
 });

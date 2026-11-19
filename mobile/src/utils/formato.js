@@ -59,3 +59,23 @@ export function describirCampo(campo = '') {
   if (partes[0] === 'multimedia' && partes.length === 2) return `Imagen ${Number(partes[1]) + 1}`;
   return ROTULOS[partes[0]] ?? campo;
 }
+
+// Partes de la fecha para el talón de las entradas: VIE / 20 / NOV / 21:00 (solo presentación).
+export function partesFecha(iso) {
+  const fecha = new Date(iso);
+  const limpiar = (texto) => texto.replace('.', '').toUpperCase();
+  return {
+    dia: limpiar(fecha.toLocaleDateString('es-AR', { weekday: 'short' })),
+    numero: String(fecha.getDate()),
+    mes: limpiar(fecha.toLocaleDateString('es-AR', { month: 'short' })),
+    hora: fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+  };
+}
+
+// Código corto y legible para mostrar en la entrada (derivado del id de la compra).
+export const codigoCompra = (id) =>
+  `#${id
+    .replace(/-/g, '')
+    .slice(0, 8)
+    .toUpperCase()
+    .replace(/(.{4})/, '$1-')}`;

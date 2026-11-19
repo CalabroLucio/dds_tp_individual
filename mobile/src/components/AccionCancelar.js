@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { colores } from '../theme/tema';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 import { useCancelar } from '../hooks/useCompras';
 import { ErroresFormulario } from './ErroresFormulario';
@@ -14,7 +15,7 @@ export function AccionCancelar({ compra }) {
       <Button
         mode="outlined"
         icon="close-circle-outline"
-        textColor="#B3261E"
+        textColor={colores.error}
         loading={cancelar.isPending}
         disabled={cancelar.isPending}
         onPress={() => setAbierto(true)}

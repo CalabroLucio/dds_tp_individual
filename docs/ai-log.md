@@ -154,6 +154,14 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - README para el repo público, guía de trabajo del proyecto en `.claude/CLAUDE.md` (comandos, capas, test-first, reglas de commit) y borrador del guion del video en `.local/` (no se sube).
 - Pasada final de calidad: formato, lint, 190 tests de backend, 4 E2E y 58 de mobile en verde; la app compila para Android.
 
+### Prueba en el celular y rediseño de la interfaz — 2026-11-19
+- Prueba real en Android con Expo Go: con WSL en modo mirrored el celular igual no llegaba al backend (timeout). Diagnóstico desde la IA con consultas de solo lectura a Windows: el **firewall de Hyper-V** tenía `DefaultInboundAction: Block`. Se abrió solo lo necesario (puertos 3000 y 8081) con `New-NetFirewallHyperVRule`, en lugar de habilitar todo el tráfico entrante. Documentado en el quickstart.
+- La app funcionaba pero el autor juzgó la interfaz "fea": era Paper casi sin tocar. Se tomaron decisiones de diseño en conjunto con mockups comparativos: estilo **nocturno premium** (DICE/Fever), tarjetas con forma de **ticket troquelado** con la fecha en el talón, **Poppins**, tab bar **flotante tipo píldora**, la compra como **entrada digital** y el chat en **pantalla propia**. Paper se mantuvo para lo funcional, tematizado.
+- Las decisiones quedaron escritas como skill del proyecto (`.claude/skills/ticketit-ui/SKILL.md`): paleta, tipografía, espaciado, componentes de identidad y reglas. Así cualquier pantalla futura (o una sesión nueva de IA) sigue el mismo sistema.
+- El autor pidió un aviso de "QR por mail"; como el sistema no envía mails, el texto aclara que es un envío simulado, para no afirmar algo falso en la app.
+- Detalle técnico: la línea punteada del troquel se dibuja con segmentos porque los bordes `dashed` de un solo lado no se ven bien en Android.
+- Los 58 tests de mobile siguieron en verde con el rediseño (solo un texto pasó de "TOTAL" a "Total" para no romper un test). Backend 190.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

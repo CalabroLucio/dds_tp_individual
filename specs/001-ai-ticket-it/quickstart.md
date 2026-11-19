@@ -20,9 +20,14 @@ Guía de ejecución y validación. No contiene código de implementación: el co
 2. En PowerShell: `wsl --shutdown`, y volver a abrir WSL.
 3. Verificar en WSL: `wslinfo --networking-mode` debe responder `mirrored`.
 4. Obtener la IP de la PC en la red local (en Windows: `ipconfig`, adaptador WiFi, "Dirección IPv4").
-5. Si el celular no llega a los puertos 3000 (backend) y 8081 (Metro), abrir esos puertos de entrada en el
-   firewall de Windows (y, si hace falta, permitir el tráfico entrante hacia WSL en el firewall de Hyper-V).
-   Comprobación rápida: abrir `http://<IP-de-la-PC>:3000/api-docs` en el navegador del celular.
+5. En modo mirrored, el **firewall de Hyper-V** bloquea por defecto el tráfico entrante hacia WSL
+   (`DefaultInboundAction: Block`). Abrir solo los puertos del backend y de Metro, en PowerShell como administrador:
+   ```powershell
+   New-NetFirewallHyperVRule -Name "AITicketIt" -DisplayName "AI Ticket It (API y Metro)" -Direction Inbound -VMCreatorId '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}' -Protocol TCP -LocalPorts 3000,8081 -Action Allow
+   ```
+   Para quitarla: `Remove-NetFirewallHyperVRule -Name "AITicketIt"`.
+6. Comprobación: abrir `http://<IP-de-la-PC>:3000/salud` en el navegador del celular (debe responder
+   `{"estado":"ok"}`). El celular tiene que estar en el mismo router que la PC (misma subred).
 
 ## 2. Instalación
 

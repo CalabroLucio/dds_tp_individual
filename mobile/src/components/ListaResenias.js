@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
-import { Avatar, Card, Text } from 'react-native-paper';
+import { Avatar, Text } from 'react-native-paper';
 import { Estrellas } from './Puntaje';
+import { colores, radios } from '../theme/tema';
 
 // Reseñas de eventos anteriores del organizador (consigna: "conocer experiencias previas antes de comprar").
 export function ListaResenias({ resenias }) {
@@ -14,34 +15,33 @@ export function ListaResenias({ resenias }) {
   return (
     <View style={estilos.lista}>
       {resenias.map((r) => (
-        <Card key={r.id} mode="contained">
-          <Card.Title
-            title={`${r.comprador.nombre} ${r.comprador.apellido[0]}.`}
-            subtitle={`en ${r.evento.nombre}`}
-            left={(props) => (
-              <Avatar.Text
-                {...props}
-                size={36}
-                label={`${r.comprador.nombre[0]}${r.comprador.apellido[0]}`}
-              />
-            )}
-            right={() => (
-              <View style={estilos.estrellas}>
-                <Estrellas puntaje={r.puntaje} />
-              </View>
-            )}
-          />
-          <Card.Content>
-            <Text variant="bodyMedium">{r.comentario}</Text>
-          </Card.Content>
-        </Card>
+        <View key={r.id} style={estilos.resenia}>
+          <View style={estilos.fila}>
+            <Avatar.Text
+              size={34}
+              label={`${r.comprador.nombre[0]}${r.comprador.apellido[0]}`}
+              style={estilos.avatar}
+              color={colores.texto}
+            />
+            <View style={estilos.flex}>
+              <Text variant="titleSmall">{`${r.comprador.nombre} ${r.comprador.apellido[0]}.`}</Text>
+              <Text variant="bodySmall" style={estilos.secundario}>{`en ${r.evento.nombre}`}</Text>
+            </View>
+            <Estrellas puntaje={r.puntaje} />
+          </View>
+          <Text variant="bodyMedium">{r.comentario}</Text>
+        </View>
       ))}
     </View>
   );
 }
 
 const estilos = StyleSheet.create({
-  lista: { gap: 8 },
-  estrellas: { paddingRight: 16 },
-  vacio: { opacity: 0.7 },
+  lista: { gap: 10 },
+  resenia: { gap: 10, padding: 14, borderRadius: radios.tarjeta, backgroundColor: colores.superficie },
+  fila: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  flex: { flex: 1 },
+  avatar: { backgroundColor: colores.superficieAlta },
+  secundario: { color: colores.textoSecundario },
+  vacio: { color: colores.textoSecundario },
 });

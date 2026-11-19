@@ -1,11 +1,13 @@
 import { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Card, Chip, IconButton, Text, TextInput } from 'react-native-paper';
+import { Button, IconButton, Text, TextInput } from 'react-native-paper';
 import { router, Stack } from 'expo-router';
 import { useCategorias, useCrearEvento } from '../../hooks/useEventos';
 import { CampoFechaHora } from '../../components/CampoFechaHora';
 import { ErroresFormulario } from '../../components/ErroresFormulario';
 import { Cargando } from '../../components/Cargando';
+import { ChipFiltro } from '../../components/ChipFiltro';
+import { colores, radios } from '../../theme/tema';
 
 function mananaALas21() {
   const fecha = new Date();
@@ -93,14 +95,12 @@ export default function PantallaNuevoEvento() {
         <Text variant="labelLarge">Categoría</Text>
         <View style={estilos.chips}>
           {(categorias.data ?? []).map((c) => (
-            <Chip
+            <ChipFiltro
               key={c.id}
-              selected={c.id === categoriaElegida}
-              showSelectedOverlay
+              etiqueta={c.nombre}
+              seleccionado={c.id === categoriaElegida}
               onPress={() => setCategoriaId(c.id)}
-            >
-              {c.nombre}
-            </Chip>
+            />
           ))}
         </View>
 
@@ -123,13 +123,12 @@ export default function PantallaNuevoEvento() {
         </View>
         <View style={estilos.chips}>
           {multimedia.map((url, i) => (
-            <Chip
+            <ChipFiltro
               key={`${url}-${i}`}
-              icon="image-outline"
-              onClose={() => setMultimedia((actuales) => actuales.filter((_, j) => j !== i))}
-            >
-              {`Imagen ${i + 1}`}
-            </Chip>
+              icono="close"
+              etiqueta={`Imagen ${i + 1}`}
+              onPress={() => setMultimedia((actuales) => actuales.filter((_, j) => j !== i))}
+            />
           ))}
         </View>
 
@@ -137,20 +136,19 @@ export default function PantallaNuevoEvento() {
           Tipos de entrada
         </Text>
         {tipos.map((tipo, i) => (
-          <Card key={tipo.clave} mode="outlined">
-            <Card.Title
-              title={`Tipo ${i + 1}`}
-              right={() =>
-                tipos.length > 1 ? (
-                  <IconButton
-                    icon="delete-outline"
-                    accessibilityLabel={`Quitar tipo ${i + 1}`}
-                    onPress={() => setTipos((actuales) => actuales.filter((t) => t.clave !== tipo.clave))}
-                  />
-                ) : null
-              }
-            />
-            <Card.Content style={estilos.tipo}>
+          <View key={tipo.clave} style={estilos.tarjetaTipo}>
+            <View style={estilos.encabezadoTipo}>
+              <Text variant="titleSmall">{`Tipo ${i + 1}`}</Text>
+              {tipos.length > 1 ? (
+                <IconButton
+                  icon="delete-outline"
+                  iconColor={colores.error}
+                  accessibilityLabel={`Quitar tipo ${i + 1}`}
+                  onPress={() => setTipos((actuales) => actuales.filter((t) => t.clave !== tipo.clave))}
+                />
+              ) : null}
+            </View>
+            <View style={estilos.tipo}>
               <TextInput
                 label="Nombre (General, Platea, VIP…)"
                 accessibilityLabel={`Nombre del tipo ${i + 1}`}
@@ -190,8 +188,8 @@ export default function PantallaNuevoEvento() {
                   onChangeText={(v) => cambiarTipo(tipo.clave, 'cupo', v)}
                 />
               </View>
-            </Card.Content>
-          </Card>
+            </View>
+          </View>
         ))}
         <Button mode="outlined" icon="ticket-outline" onPress={agregarTipo}>
           Agregar tipo de entrada
@@ -221,5 +219,12 @@ const estilos = StyleSheet.create({
   fila: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   seccion: { marginTop: 8 },
   tipo: { gap: 8 },
+  tarjetaTipo: { gap: 4, padding: 14, borderRadius: radios.tarjeta, backgroundColor: colores.superficie },
+  encabezadoTipo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 44,
+  },
   publicar: { marginTop: 8, paddingVertical: 4 },
 });

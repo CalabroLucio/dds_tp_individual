@@ -1,6 +1,8 @@
 import { StyleSheet, View } from 'react-native';
-import { Avatar, Button, Card, Text } from 'react-native-paper';
+import { Avatar, Button, Icon, Text } from 'react-native-paper';
 import { useSession } from '../session/SessionProvider';
+import { Encabezado } from './Encabezado';
+import { colores, radios } from '../theme/tema';
 
 const ROTULO_ROL = { COMPRADOR: 'Comprador', ORGANIZADOR: 'Organizador' };
 
@@ -12,17 +14,29 @@ export function PantallaPerfil() {
 
   return (
     <View style={estilos.contenedor}>
-      <Card mode="contained">
-        <Card.Title
-          title={`${usuario.nombre} ${usuario.apellido}`}
-          subtitle={usuario.email}
-          left={(props) => <Avatar.Text {...props} label={iniciales} />}
-        />
-        <Card.Content>
-          <Text variant="bodyMedium">Rol: {ROTULO_ROL[usuario.rol]}</Text>
-        </Card.Content>
-      </Card>
-      <Button mode="outlined" icon="logout" onPress={logout} style={estilos.boton}>
+      <Encabezado antetitulo="Tu cuenta" titulo="Perfil" />
+      <View style={estilos.tarjeta}>
+        <Avatar.Text size={72} label={iniciales} style={estilos.avatar} color={colores.sobreMarca} />
+        <Text variant="titleLarge">{`${usuario.nombre} ${usuario.apellido}`}</Text>
+        <Text variant="bodyMedium" style={estilos.secundario}>
+          {usuario.email}
+        </Text>
+        <View style={estilos.rol}>
+          <Icon
+            source={usuario.rol === 'ORGANIZADOR' ? 'calendar-star' : 'ticket-outline'}
+            size={16}
+            color={colores.marca}
+          />
+          <Text variant="labelLarge" style={estilos.textoRol}>{`Rol: ${ROTULO_ROL[usuario.rol]}`}</Text>
+        </View>
+      </View>
+      <Button
+        mode="outlined"
+        icon="logout"
+        onPress={logout}
+        contentStyle={estilos.boton}
+        textColor={colores.error}
+      >
         Cerrar sesión
       </Button>
     </View>
@@ -30,6 +44,26 @@ export function PantallaPerfil() {
 }
 
 const estilos = StyleSheet.create({
-  contenedor: { flex: 1, padding: 16, gap: 16 },
-  boton: { alignSelf: 'stretch' },
+  contenedor: { flex: 1, paddingHorizontal: 16, gap: 16 },
+  tarjeta: {
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 28,
+    borderRadius: radios.tarjeta,
+    backgroundColor: colores.superficie,
+  },
+  avatar: { backgroundColor: colores.marca, marginBottom: 8 },
+  secundario: { color: colores.textoSecundario },
+  rol: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: radios.pildora,
+    backgroundColor: colores.marcaSuave,
+  },
+  textoRol: { color: colores.marca },
+  boton: { paddingVertical: 6 },
 });

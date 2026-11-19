@@ -1,11 +1,15 @@
 import { Tabs } from 'expo-router';
 import { iconoTab as icono } from '../../components/iconoTab';
-import { tema } from '../../theme/tema';
+import { colores } from '../../theme/tema';
+import { BarraPestanas } from '../../components/BarraPestanas';
 
 // Pestañas del comprador. Cada historia agrega la suya al crear su pantalla.
 export default function TabsComprador() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: tema.colors.primary }}>
+    <Tabs
+      tabBar={(props) => <BarraPestanas {...props} />}
+      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colores.fondo } }}
+    >
       <Tabs.Screen name="explorar" options={{ title: 'Explorar', tabBarIcon: icono('compass-outline') }} />
       <Tabs.Screen name="favoritos" options={{ title: 'Favoritos', tabBarIcon: icono('heart-outline') }} />
       <Tabs.Screen

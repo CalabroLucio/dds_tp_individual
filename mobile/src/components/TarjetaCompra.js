@@ -1,39 +1,63 @@
 import { StyleSheet, View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Text, TouchableRipple } from 'react-native-paper';
+import { Ticket } from './Ticket';
 import { ChipEstado } from './ChipEstado';
-import { formatearFecha, formatearPrecio, textoSeguimiento } from '../utils/formato';
+import { colores, radios } from '../theme/tema';
+import { formatearPrecio, partesFecha, textoSeguimiento } from '../utils/formato';
 
+// Una compra como entrada chica: talón con la fecha del evento y cuerpo con estado y seguimiento.
 export function TarjetaCompra({ compra, onPress, mostrarComprador = false }) {
   const seguimiento = textoSeguimiento(compra);
+  const f = partesFecha(compra.evento.fecha);
   return (
-    <Card mode="elevated" onPress={onPress} accessibilityLabel={`Compra de ${compra.evento.nombre}`}>
-      <Card.Content style={estilos.contenido}>
+    <TouchableRipple
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`Compra de ${compra.evento.nombre}`}
+      borderless
+      style={estilos.toque}
+    >
+      <Ticket
+        anchoTalon={72}
+        talon={
+          <View style={estilos.talon}>
+            <Text variant="labelSmall" style={estilos.dia}>
+              {f.dia}
+            </Text>
+            <Text variant="titleLarge">{f.numero}</Text>
+            <Text variant="labelSmall" style={estilos.mes}>
+              {f.mes}
+            </Text>
+          </View>
+        }
+      >
         <View style={estilos.fila}>
           <ChipEstado estado={compra.estado} compacto />
           {seguimiento ? (
-            <Text variant="labelLarge" style={estilos.seguimiento}>
+            <Text variant="labelMedium" style={estilos.seguimiento}>
               {seguimiento}
             </Text>
           ) : null}
         </View>
-        <Text variant="titleMedium" style={estilos.nombre}>
+        <Text variant="titleMedium" numberOfLines={1}>
           {mostrarComprador
             ? `${compra.comprador.nombre} ${compra.comprador.apellido}`
             : compra.evento.nombre}
         </Text>
-        {!mostrarComprador ? <Text variant="bodyMedium">{formatearFecha(compra.evento.fecha)}</Text> : null}
-        <Text variant="bodyMedium" style={estilos.secundario}>
+        <Text variant="bodySmall" style={estilos.secundario}>
           {`${compra.cantidad} × ${compra.tipoEntrada.nombre} · Total ${formatearPrecio(compra.total)}`}
         </Text>
-      </Card.Content>
-    </Card>
+      </Ticket>
+    </TouchableRipple>
   );
 }
 
 const estilos = StyleSheet.create({
-  contenido: { gap: 4 },
-  fila: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  seguimiento: { color: '#1E6B12', fontWeight: '700' },
-  nombre: { fontWeight: '700' },
-  secundario: { opacity: 0.7 },
+  toque: { borderRadius: radios.tarjeta },
+  talon: { alignItems: 'center' },
+  dia: { color: colores.textoSecundario, letterSpacing: 1 },
+  mes: { color: colores.marca, letterSpacing: 1 },
+  fila: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
+  seguimiento: { color: colores.marca },
+  secundario: { color: colores.textoSecundario },
 });

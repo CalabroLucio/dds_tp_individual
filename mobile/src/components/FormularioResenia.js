@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Card, IconButton, Text, TextInput } from 'react-native-paper';
+import { Button, IconButton, Text, TextInput } from 'react-native-paper';
 import { useReseniar } from '../hooks/useCompras';
 import { ErroresFormulario } from './ErroresFormulario';
 import { Estrellas } from './Puntaje';
+import { colores, radios } from '../theme/tema';
 
-const AMARILLO = '#F5A623';
+const AMARILLO = colores.estrella;
 
 // Reseña tras asistir (caso de uso 9). Las reglas (UTILIZADA, una sola, 1 a 5) las valida el backend.
 export function FormularioResenia({ compraId }) {
@@ -14,9 +15,14 @@ export function FormularioResenia({ compraId }) {
   const [comentario, setComentario] = useState('');
 
   return (
-    <Card mode="outlined">
-      <Card.Title title="¿Cómo estuvo el evento?" subtitle="Tu reseña ayuda a otros compradores" />
-      <Card.Content style={estilos.contenido}>
+    <View style={estilos.panel}>
+      <View>
+        <Text variant="titleMedium">¿Cómo estuvo el evento?</Text>
+        <Text variant="bodySmall" style={estilos.secundario}>
+          Tu reseña ayuda a otros compradores
+        </Text>
+      </View>
+      <View style={estilos.contenido}>
         <View style={estilos.estrellas}>
           {[1, 2, 3, 4, 5].map((n) => (
             <IconButton
@@ -48,31 +54,27 @@ export function FormularioResenia({ compraId }) {
         >
           Enviar reseña
         </Button>
-      </Card.Content>
-    </Card>
+      </View>
+    </View>
   );
 }
 
 export function ReseniaPropia({ resenia }) {
   return (
-    <Card mode="contained">
-      <Card.Title
-        title="Tu reseña"
-        right={() => (
-          <View style={estilos.derecha}>
-            <Estrellas puntaje={resenia.puntaje} />
-          </View>
-        )}
-      />
-      <Card.Content>
-        <Text variant="bodyMedium">{resenia.comentario}</Text>
-      </Card.Content>
-    </Card>
+    <View style={estilos.panel}>
+      <View style={estilos.fila}>
+        <Text variant="titleMedium">Tu reseña</Text>
+        <Estrellas puntaje={resenia.puntaje} />
+      </View>
+      <Text variant="bodyMedium">{resenia.comentario}</Text>
+    </View>
   );
 }
 
 const estilos = StyleSheet.create({
+  panel: { gap: 12, padding: 16, borderRadius: radios.tarjeta, backgroundColor: colores.superficie },
+  secundario: { color: colores.textoSecundario },
+  fila: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   contenido: { gap: 8 },
   estrellas: { flexDirection: 'row', justifyContent: 'center' },
-  derecha: { paddingRight: 16 },
 });

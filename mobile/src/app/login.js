@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, HelperText, Surface, Text, TextInput } from 'react-native-paper';
+import { Button, HelperText, Text, TextInput } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useSession } from '../session/SessionProvider';
-import { colores } from '../theme/tema';
+import { colores, fuentes, radios } from '../theme/tema';
+import { Ticket } from '../components/Ticket';
 
 function validar({ email, password }) {
   const errores = {};
@@ -41,13 +43,23 @@ export default function PantallaLogin() {
 
   return (
     <KeyboardAvoidingView style={estilos.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <LinearGradient
+        colors={[colores.marcaSuave, colores.fondo]}
+        locations={[0, 0.55]}
+        style={StyleSheet.absoluteFill}
+      />
       <ScrollView contentContainerStyle={estilos.contenedor} keyboardShouldPersistTaps="handled">
         <View style={estilos.marca}>
-          <Surface style={estilos.logo} elevation={2}>
-            <Text style={estilos.logoTexto}>AI</Text>
-          </Surface>
-          <Text variant="headlineMedium" style={estilos.titulo}>
-            Ticket <Text style={{ color: colores.marca }}>It</Text>
+          <Ticket
+            anchoTalon={70}
+            colorFondo={colores.marca}
+            style={estilos.logo}
+            talon={<Text style={estilos.logoAi}>AI</Text>}
+          >
+            <Text style={estilos.logoCheck}>✓</Text>
+          </Ticket>
+          <Text style={estilos.titulo}>
+            Ticket <Text style={estilos.tituloIt}>It</Text>
           </Text>
           <Text variant="labelLarge" style={estilos.lema}>
             ENTRADAS A UN CLICK
@@ -116,20 +128,17 @@ export default function PantallaLogin() {
 }
 
 const estilos = StyleSheet.create({
-  flex: { flex: 1 },
-  contenedor: { flexGrow: 1, justifyContent: 'center', padding: 24 },
-  marca: { alignItems: 'center', marginBottom: 32 },
-  logo: {
-    backgroundColor: colores.marca,
-    borderRadius: 16,
-    paddingHorizontal: 22,
-    paddingVertical: 10,
-    marginBottom: 12,
-  },
-  logoTexto: { color: '#FFFFFF', fontSize: 32, fontWeight: '800' },
-  titulo: { fontWeight: '800' },
-  lema: { letterSpacing: 3, opacity: 0.6, marginTop: 4 },
+  flex: { flex: 1, backgroundColor: colores.fondo },
+  contenedor: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 2 },
+  marca: { alignItems: 'center', marginBottom: 36 },
+  logo: { width: 150, height: 74, marginBottom: 18 },
+  logoAi: { fontFamily: fuentes.negrita, fontSize: 30, color: colores.sobreMarca },
+  logoCheck: { fontFamily: fuentes.negrita, fontSize: 28, color: colores.sobreMarca, textAlign: 'center' },
+  titulo: { fontFamily: fuentes.negrita, fontSize: 36, color: colores.texto },
+  tituloIt: { color: colores.marca },
+  lema: { letterSpacing: 4, color: colores.textoSecundario, marginTop: 4 },
   errorGeneral: { textAlign: 'center' },
-  boton: { marginTop: 8, paddingVertical: 4 },
-  ayuda: { marginTop: 24, textAlign: 'center', opacity: 0.6 },
+  boton: { marginTop: 12, borderRadius: radios.pildora },
+  contenidoBoton: { paddingVertical: 8 },
+  ayuda: { marginTop: 28, textAlign: 'center', color: colores.textoSecundario },
 });

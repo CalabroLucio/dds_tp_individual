@@ -1,11 +1,13 @@
 import { FlatList, StyleSheet, View } from 'react-native';
-import { Card, FAB, Text } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useMisEventos } from '../../hooks/useEventos';
+import { TarjetaEvento } from '../../components/TarjetaEvento';
+import { Encabezado } from '../../components/Encabezado';
 import { Cargando } from '../../components/Cargando';
 import { MensajeError } from '../../components/MensajeError';
 import { EstadoVacio } from '../../components/EstadoVacio';
-import { formatearFecha, formatearPrecio } from '../../utils/formato';
+import { colores, ESPACIO_TAB } from '../../theme/tema';
 
 export default function PantallaMisEventos() {
   const eventos = useMisEventos();
@@ -19,6 +21,7 @@ export default function PantallaMisEventos() {
         data={eventos.data}
         keyExtractor={(e) => e.id}
         contentContainerStyle={estilos.lista}
+        ListHeaderComponent={<Encabezado antetitulo="Panel del organizador" titulo="Mis eventos" />}
         refreshing={eventos.isRefetching}
         onRefresh={eventos.refetch}
         ListEmptyComponent={
@@ -29,25 +32,14 @@ export default function PantallaMisEventos() {
           />
         }
         renderItem={({ item }) => (
-          <Card
-            mode="elevated"
-            onPress={() => router.push(`/evento/${item.id}/compras`)}
-            accessibilityLabel={`Evento ${item.nombre}`}
-          >
-            <Card.Title
-              title={item.nombre}
-              subtitle={`${item.categoria.nombre} · ${formatearFecha(item.fecha)}`}
-            />
-            <Card.Content>
-              <Text variant="bodyMedium">Desde {formatearPrecio(item.precioDesde)}</Text>
-            </Card.Content>
-          </Card>
+          <TarjetaEvento evento={item} onPress={() => router.push(`/evento/${item.id}/compras`)} />
         )}
       />
       <FAB
         icon="plus"
         label="Nuevo evento"
         style={estilos.fab}
+        color={colores.sobreMarca}
         onPress={() => router.push('/evento/nuevo')}
       />
     </View>
@@ -56,6 +48,6 @@ export default function PantallaMisEventos() {
 
 const estilos = StyleSheet.create({
   flex: { flex: 1 },
-  lista: { padding: 16, gap: 12, paddingBottom: 96, flexGrow: 1 },
-  fab: { position: 'absolute', right: 16, bottom: 16 },
+  lista: { paddingHorizontal: 16, gap: 12, flexGrow: 1, paddingBottom: ESPACIO_TAB + 72 },
+  fab: { position: 'absolute', right: 16, bottom: ESPACIO_TAB - 8, backgroundColor: colores.marca },
 });

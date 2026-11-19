@@ -6,13 +6,13 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "aiticketit",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "ios": {
       "icon": "./assets/expo.icon"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#6BD43F",
+        "backgroundColor": "#0E0F12",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -28,16 +28,18 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#6BD43F",
+          "backgroundColor": "#0E0F12",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
       ],
       "expo-secure-store",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-font"
     ],
     "experiments": {
       "reactCompiler": true
-    }
+    },
+    "backgroundColor": "#0E0F12"
   }
 }

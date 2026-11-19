@@ -1,54 +1,73 @@
 import { StyleSheet, View } from 'react-native';
-import { Card, Chip, Text } from 'react-native-paper';
-import { Image } from 'expo-image';
+import { Text, TouchableRipple } from 'react-native-paper';
+import { Ticket } from './Ticket';
 import { Puntaje } from './Puntaje';
-import { formatearFecha, formatearPrecio } from '../utils/formato';
+import { colores, radios } from '../theme/tema';
+import { formatearPrecio, partesFecha } from '../utils/formato';
 
+// Tarjeta del catálogo con forma de entrada: talón con la fecha grande y cuerpo con los datos del evento.
 export function TarjetaEvento({ evento, onPress, accion }) {
+  const f = partesFecha(evento.fecha);
   return (
-    <Card mode="elevated" onPress={onPress} accessibilityLabel={`Evento ${evento.nombre}`}>
-      {evento.imagenPrincipal ? (
-        <Image
-          source={{ uri: evento.imagenPrincipal }}
-          style={estilos.imagen}
-          contentFit="cover"
-          transition={200}
-        />
-      ) : null}
-      <Card.Content style={estilos.contenido}>
-        <View style={estilos.encabezado}>
-          <Chip compact icon="tag-outline" style={estilos.chip}>
-            {evento.categoria.nombre}
-          </Chip>
+    <TouchableRipple
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`Evento ${evento.nombre}`}
+      borderless
+      style={estilos.toque}
+    >
+      <Ticket
+        talon={
+          <View style={estilos.talon}>
+            <Text variant="labelMedium" style={estilos.dia}>
+              {f.dia}
+            </Text>
+            <Text variant="headlineMedium" style={estilos.numero}>
+              {f.numero}
+            </Text>
+            <Text variant="labelMedium" style={estilos.mes}>
+              {f.mes}
+            </Text>
+            <Text variant="labelSmall" style={estilos.hora}>
+              {f.hora}
+            </Text>
+          </View>
+        }
+      >
+        <View style={estilos.fila}>
+          <Text variant="labelSmall" style={estilos.categoria} numberOfLines={1}>
+            {evento.categoria.nombre.toUpperCase()}
+          </Text>
           {accion}
         </View>
-        <Text variant="titleMedium" style={estilos.nombre}>
+        <Text variant="titleMedium" numberOfLines={2} style={estilos.nombre}>
           {evento.nombre}
         </Text>
-        <Text variant="bodyMedium" style={estilos.secundario}>
-          {formatearFecha(evento.fecha)}
+        <Text variant="bodySmall" style={estilos.secundario} numberOfLines={1}>
+          {`${evento.organizador.nombre} ${evento.organizador.apellido}`}
         </Text>
-        <View style={estilos.pie}>
-          <Text variant="titleSmall">Desde {formatearPrecio(evento.precioDesde)}</Text>
-          <View style={estilos.organizador}>
-            <Text variant="bodySmall" style={estilos.secundario}>
-              {evento.organizador.nombre} {evento.organizador.apellido}
-            </Text>
-            <Puntaje puntaje={evento.organizador.puntaje} cantidad={evento.organizador.cantidadResenias} />
-          </View>
+        <View style={[estilos.fila, estilos.pie]}>
+          <Text variant="titleSmall" style={estilos.precio}>
+            {evento.precioDesde === 0 ? 'Gratis' : `Desde ${formatearPrecio(evento.precioDesde)}`}
+          </Text>
+          <Puntaje puntaje={evento.organizador.puntaje} cantidad={evento.organizador.cantidadResenias} />
         </View>
-      </Card.Content>
-    </Card>
+      </Ticket>
+    </TouchableRipple>
   );
 }
 
 const estilos = StyleSheet.create({
-  imagen: { height: 140, borderTopLeftRadius: 12, borderTopRightRadius: 12 },
-  contenido: { gap: 4, paddingTop: 12 },
-  encabezado: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  chip: { alignSelf: 'flex-start' },
-  nombre: { fontWeight: '700' },
-  secundario: { opacity: 0.7 },
-  pie: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 4 },
-  organizador: { alignItems: 'flex-end', gap: 2 },
+  toque: { borderRadius: radios.tarjeta },
+  talon: { alignItems: 'center' },
+  dia: { color: colores.textoSecundario, letterSpacing: 1 },
+  numero: { color: colores.texto, lineHeight: 34 },
+  mes: { color: colores.marca, letterSpacing: 1 },
+  hora: { color: colores.textoSecundario, marginTop: 4 },
+  fila: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 28 },
+  categoria: { color: colores.marca, letterSpacing: 1, flex: 1 },
+  nombre: { color: colores.texto },
+  secundario: { color: colores.textoSecundario },
+  pie: { marginTop: 6 },
+  precio: { color: colores.texto },
 });
