@@ -8,6 +8,8 @@ import { MensajeError } from '../../components/MensajeError';
 import { ChipEstado } from '../../components/ChipEstado';
 import { CuentaRegresiva } from '../../components/CuentaRegresiva';
 import { ErroresFormulario } from '../../components/ErroresFormulario';
+import { AccionCancelar } from '../../components/AccionCancelar';
+import { Historial } from '../../components/Historial';
 import { formatearFecha, formatearPrecio, textoSeguimiento } from '../../utils/formato';
 
 // Detalle de una compra. Cada historia agrega su sección (pago, cancelación, historial, chat, reseña) y cada
@@ -43,6 +45,8 @@ export default function PantallaCompra() {
       </Card>
 
       {c.acciones.puedePagar ? <SeccionPago compra={c} /> : null}
+      {c.acciones.puedeCancelar ? <AccionCancelar compra={c} /> : null}
+      <Historial historial={c.historial} />
     </ScrollView>
   );
 }

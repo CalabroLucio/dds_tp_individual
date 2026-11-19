@@ -12,6 +12,9 @@ export function crearComprasController({ comprasService }) {
     pagar: (req, res) => {
       res.json(comprasService.pagar(req.usuario, req.datos.params.compraId, req.datos.body.medioPago));
     },
+    cancelar: (req, res) => {
+      res.json(comprasService.cancelar(req.usuario, req.datos.params.compraId));
+    },
     mediosPago: (_req, res) => {
       res.json(comprasService.mediosPago());
     },

@@ -204,14 +204,14 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 ### Tests (escribir primero; deben fallar)
 
-- [ ] T066 [P] [US5] Test unitario `backend/test/unit/cancelacion.test.js`: límite exacto (31 min → permitido; 30 min exactos y 20 min → rechazado), estados permitidos y finales
-- [ ] T067 [P] [US5] Test de integración `backend/test/integration/compras.cancelar.test.js`: escenarios 1–6 de la story 5 con reloj de prueba, el cupo vuelve a estar disponible, el historial registra quién y cuándo, compra ajena → 403
-- [ ] T068 [P] [US5] Test `mobile/__tests__/comprador/cancelar.test.js`: el botón aparece solo con `acciones.puedeCancelar`, diálogo de confirmación, muestra REEMBOLSADA, muestra el mensaje ante un 409
+- [X] T066 [P] [US5] Test unitario `backend/test/unit/cancelacion.test.js`: límite exacto (31 min → permitido; 30 min exactos y 20 min → rechazado), estados permitidos y finales
+- [X] T067 [P] [US5] Test de integración `backend/test/integration/compras.cancelar.test.js`: escenarios 1–6 de la story 5 con reloj de prueba, el cupo vuelve a estar disponible, el historial registra quién y cuándo, compra ajena → 403
+- [X] T068 [P] [US5] Test `mobile/__tests__/comprador/cancelar.test.js`: el botón aparece solo con `acciones.puedeCancelar`, diálogo de confirmación, muestra REEMBOLSADA, muestra el mensaje ante un 409
 
 ### Implementación
 
-- [ ] T069 [US5] Extender `backend/src/domain/compra.js` (`puedeCancelar`, transición por tipo de estado, `LIMITE_CANCELACION_MIN`), `backend/src/services/compras.service.js` (`cancelar`, liberación de cupo en el repositorio) y la ruta `POST /compras/:compraId/cancelacion`, hasta pasar T066 y T067
-- [ ] T070 [US5] Crear `mobile/src/components/Historial.js` (estados con quién y cuándo) y agregar la cancelación con diálogo a `mobile/src/app/compra/[id].js`, hasta pasar T068
+- [X] T069 [US5] Extender `backend/src/domain/compra.js` (`puedeCancelar`, transición por tipo de estado, `LIMITE_CANCELACION_MIN`), `backend/src/services/compras.service.js` (`cancelar`, liberación de cupo en el repositorio) y la ruta `POST /compras/:compraId/cancelacion`, hasta pasar T066 y T067
+- [X] T070 [US5] Crear `mobile/src/components/Historial.js` (estados con quién y cuándo) y agregar la cancelación con diálogo a `mobile/src/app/compra/[id].js`, hasta pasar T068
 
 **Checkpoint**: US5 funcional. Commit de hito.
 

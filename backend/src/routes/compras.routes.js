@@ -19,6 +19,8 @@ export function crearRutasCompras({ services, middleware }) {
     controller.pagar,
   );
 
+  router.post('/:compraId/cancelacion', autenticar, validar({ params: compraIdParams }), controller.cancelar);
+
   return router;
 }
 

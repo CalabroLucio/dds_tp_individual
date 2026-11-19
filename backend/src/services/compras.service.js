@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { compraAbierta } from '../domain/evento.js';
 import {
   crearCompra,
+  dentroDelPlazoDeCancelacion,
+  esFinal,
   estaVencida,
   QUIEN_SISTEMA,
   quienDe,
@@ -96,6 +98,26 @@ export function crearComprasService({ repos, reloj, reglas, presentacion }) {
       });
       const reserva = repos.compras.crearCompraReservandoCupo({ compra, tipoEntrada });
       if (!reserva.ok) throw errores.cupoInsuficiente(reserva.disponible);
+      return presentacion.compra(compra, usuario);
+    },
+
+    // FR-020/FR-021: el plazo se valida en el momento del pedido, no con un proceso periódico.
+    cancelar(usuario, compraId) {
+      const ahora = reloj.ahora();
+      const compra = obtenerDelComprador(compraId, usuario);
+      const evento = repos.eventos.porId(compra.eventoId);
+      // Si ya había vencido, quedó CANCELADA por el sistema: el pedido se cumple igual.
+      if (cancelarSiVencio(compra, ahora)) return presentacion.compra(compra, usuario);
+      if (esFinal(compra.estado)) {
+        throw errores.estadoInvalido(
+          `La compra está ${rotuloEstado(compra.estado)} y ya no se puede cancelar`,
+        );
+      }
+      if (!dentroDelPlazoDeCancelacion(evento, ahora, reglas)) {
+        throw errores.fueraDePlazo(reglas.LIMITE_CANCELACION_MIN);
+      }
+      const destino = compra.estado === 'PENDIENTE' ? 'CANCELADA' : 'REEMBOLSADA';
+      transicionar(compra, destino, quienDe(usuario), ahora);
       return presentacion.compra(compra, usuario);
     },
 

@@ -35,6 +35,11 @@ export function useCrearCompra() {
   return useMutation({ mutationFn: comprasApi.crear, onSuccess: invalidar });
 }
 
+export function useCancelar(id) {
+  const invalidar = useInvalidarCompras();
+  return useMutation({ mutationFn: () => comprasApi.cancelar(id), onSettled: invalidar });
+}
+
 export function usePagar(id) {
   const invalidar = useInvalidarCompras();
   return useMutation({ mutationFn: (medioPago) => comprasApi.pagar(id, medioPago), onSettled: invalidar });

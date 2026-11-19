@@ -106,6 +106,13 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - E2E P1 con servidor real (fetch): publicar → buscar → comprar → pago rechazado → pago aprobado → cupo descontado → "Mis compras". Verde.
 - **MVP completo**: las cuatro historias P1 funcionan de punta a punta. Tests: backend 118 + 1 E2E, mobile 46.
 
+### Historia 5 — cancelar y reembolsar
+- PENDIENTE → CANCELADA y CONFIRMADA → REEMBOLSADA solo si faltan **más** de 30 minutos (con 30 exactos ya no). El plazo se valida al momento del pedido (FR-021), sin job. El estado final se chequea antes que el plazo para dar el motivo correcto.
+- Cancelar una PENDIENTE que ya venció la deja CANCELADA por el sistema y responde 200: el pedido del usuario se cumple igual.
+- Mobile: diálogo de confirmación que explica si hay reembolso, e historial de estados con quién y cuándo (FR-017).
+- Se automatizó la verificación (formato, lint, tests, bundle) en un script para repetirla igual en cada historia.
+- Tests: backend 133, mobile 49.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.
