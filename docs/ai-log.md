@@ -45,6 +45,12 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 | Puntaje de reseña | Entero de 1 a 5 (el diagrama dice `Double`) | Más simple para UI y promedio; el promedio del organizador sí es decimal |
 | Pago simulado | El comprador elige un medio de pago simulado; "Tarjeta rechazada" siempre falla, los demás siempre aprueban | Determinista para tests y video; imita las "tarjetas de prueba" de pasarelas reales (clarify, 2026-11-19) |
 | UTILIZADA automática | Manual por el organizador desde el cutoff, y automática 24 h después del inicio del evento (configurable) | Evita compras CONFIRMADA eternas y habilita reseñas. Propuesta del autor: no depender solo de un marcado manual. Limitación conocida: eventos cancelados o cortados a mitad no están modelados |
+| Expo SDK y celular | SDK 57 con Expo Go instalado a mano en Android (`npx expo-go download android 57`) | Verificado en la doc de Expo: el SDK más nuevo es 58 pero la plantilla por defecto es 57 y Expo Go soporta un solo SDK. Fijar la versión evita sorpresas por actualizaciones del store |
+| UI | React Native Paper (Material, gratis) con tema propio | Elegido por el autor: resultado prolijo con poco código de estilos |
+| Red WSL | Modo mirrored en `.wslconfig` | WSL estaba en NAT (IP 172.22.x) y el celular no la alcanza. Elegido por el autor entre mirrored y port proxy |
+| Contrato | OpenAPI 3.1 escrito a mano, validado en tests con Ajv + swagger-parser | Contract-first real; generarlo desde Zod invertiría la dirección. Helper propio de ~40 líneas en vez de una dependencia poco mantenida |
+| Front "tonto" | La API devuelve `acciones`, `diasParaEvento`, `avisoNoCancelable`, etc. | Las reglas viven solo en el dominio (constitution III); mobile solo muestra |
+| Sesión y errores | JWT 8 h; pago rechazado = 402; conflictos de negocio = 409; errores `{error:{codigo,mensaje,detalles}}` | Cierra la duración de sesión que quedó abierta en clarify |
 | Repo y `.local/` | `.local/` (consigna y material personal) en `.gitignore`. El PDF no pide entregar el repo, solo el video; el autor decidió que el repo sea **público** | Al ser público: no commitear secretos, y commitear con la identidad de la cuenta de la facultad (no la personal) |
 | Identidad git | Remote por alias SSH `github.com-utn`; `user.name`/`user.email` locales del repo con la cuenta UTN | La config global es la cuenta personal; sin override local los commits salen con la identidad equivocada |
 
@@ -53,8 +59,9 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - [x] Reiniciar Claude Code para cargar MCPs/hook.
 - [x] `/speckit-constitution` v1.0.0 ratificada (2026-11-19). Falta borrar el Sync Impact Report del comienzo antes de commitear.
 - [x] Consigna guardada en `.local/consigna.md` (ignorada por git) y `.gitignore` creado.
-- [ ] `/speckit-specify` → una sola spec con user stories P1/P2/P3 (los 12 casos de uso del PDF).
-- [ ] `/speckit-clarify`, `/speckit-plan` (+ data-model, contracts OpenAPI), `/speckit-tasks`, `/speckit-analyze`.
+- [x] `/speckit-specify` (10 user stories P1/P2/P3) y `/speckit-clarify` (4 decisiones).
+- [x] `/speckit-plan`: research, data-model, contracts/openapi.yaml y quickstart.
+- [ ] `/speckit-tasks`, `/speckit-analyze`.
 - [ ] `/speckit-implement` con Opus.
 - [ ] Skills propias, `CLAUDE.md` raíz, `codegraph init -i` tras el scaffold.
 

@@ -1,0 +1,784 @@
+openapi: 3.1.0
+info:
+  title: AI Ticket It API
+  version: 1.0.0
+  description: |
+    API REST de AI Ticket It. Este documento es la **fuente de verdad** del contrato (constitution IV): backend y
+    mobile se ajustan a él. Los cambios se hacen primero acá.
+
+    - Autenticación con JWT (`Authorization: Bearer <token>`), salvo `POST /auth/login`.
+    - Fechas en ISO 8601 UTC. Montos en la moneda única del sistema.
+    - Los errores tienen siempre la forma `{ "error": { "codigo", "mensaje", "detalles?" } }`.
+servers:
+  - url: http://localhost:3000
+    description: Desarrollo local (en el celular, usar la IP de la PC)
+
+tags:
+  - name: Auth
+  - name: Catálogo
+  - name: Eventos del organizador
+  - name: Compras
+  - name: Chat
+  - name: Reseñas
+  - name: Favoritos
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: Sesión iniciada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LoginResponse' }
+        '400': { $ref: '#/components/responses/Validacion' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Usuario de la sesión actual
+      responses:
+        '200':
+          description: Usuario autenticado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Usuario' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+
+  /categorias:
+    get:
+      tags: [Catálogo]
+      summary: Listar categorías
+      responses:
+        '200':
+          description: Categorías disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Categoria' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+
+  /medios-pago:
+    get:
+      tags: [Compras]
+      summary: Medios de pago simulados
+      description: '`TARJETA_RECHAZADA` siempre es rechazado; los demás siempre se aprueban.'
+      responses:
+        '200':
+          description: Medios de pago
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/MedioPago' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+
+  /eventos:
+    get:
+      tags: [Catálogo]
+      summary: Buscar eventos (comprador)
+      description: |
+        Solo devuelve eventos futuros. Búsqueda sin distinguir mayúsculas ni tildes sobre nombre, descripción y
+        categoría. Orden por defecto: `fecha` ascendente.
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+          description: Texto a buscar
+        - name: categoriaId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: precioMin
+          in: query
+          schema: { type: number, minimum: 0 }
+        - name: precioMax
+          in: query
+          schema: { type: number, minimum: 0 }
+          description: Un evento coincide si al menos un tipo de entrada está dentro del rango
+        - name: orden
+          in: query
+          schema: { type: string, enum: [precio, fecha, puntaje], default: fecha }
+          description: '`precio` usa el menor precio del evento; `puntaje` ordena por puntaje del organizador (sin reseñas al final)'
+        - name: direccion
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+          description: Por defecto `asc` para precio y fecha, `desc` para puntaje
+      responses:
+        '200':
+          description: Eventos encontrados (lista vacía si no hay coincidencias)
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/EventoResumen' }
+        '400': { $ref: '#/components/responses/Validacion' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+    post:
+      tags: [Eventos del organizador]
+      summary: Crear un evento (organizador)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NuevoEvento' }
+      responses:
+        '201':
+          description: Evento creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EventoDetalle' }
+        '400': { $ref: '#/components/responses/Validacion' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+
+  /eventos/mios:
+    get:
+      tags: [Eventos del organizador]
+      summary: Eventos del organizador autenticado
+      responses:
+        '200':
+          description: Eventos propios (futuros y pasados), más recientes primero
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/EventoResumen' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+
+  /eventos/{eventoId}:
+    get:
+      tags: [Catálogo]
+      summary: Detalle de un evento
+      parameters:
+        - { $ref: '#/components/parameters/EventoId' }
+      responses:
+        '200':
+          description: Detalle con tipos de entrada, puntaje y reseñas del organizador
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EventoDetalle' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+  /eventos/{eventoId}/compras:
+    get:
+      tags: [Eventos del organizador]
+      summary: Compras de un evento y disponibilidad por tipo (organizador dueño)
+      parameters:
+        - { $ref: '#/components/parameters/EventoId' }
+      responses:
+        '200':
+          description: Compras del evento con su estado y entradas disponibles por tipo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ComprasDeEvento' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+  /compras:
+    get:
+      tags: [Compras]
+      summary: Mis compras (comprador)
+      responses:
+        '200':
+          description: Compras del comprador, más recientes primero
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Compra' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+    post:
+      tags: [Compras]
+      summary: Comprar entradas (comprador)
+      description: Crea la compra en estado PENDIENTE y reserva el cupo de forma atómica.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NuevaCompra' }
+      responses:
+        '201':
+          description: Compra creada en estado PENDIENTE
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Compra' }
+        '400': { $ref: '#/components/responses/Validacion' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409':
+          description: Sin cupo suficiente (`CUPO_INSUFICIENTE`), evento ya empezado (`EVENTO_NO_DISPONIBLE`) o cantidad sobre el máximo (`CANTIDAD_EXCEDE_MAXIMO`)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /compras/{compraId}:
+    get:
+      tags: [Compras]
+      summary: Detalle de una compra (comprador o organizador del evento)
+      parameters:
+        - { $ref: '#/components/parameters/CompraId' }
+      responses:
+        '200':
+          description: Compra con historial de estados
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CompraDetalle' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+  /compras/{compraId}/pagos:
+    post:
+      tags: [Compras]
+      summary: Pagar una compra PENDIENTE (pago simulado)
+      parameters:
+        - { $ref: '#/components/parameters/CompraId' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NuevoPago' }
+      responses:
+        '200':
+          description: Pago aprobado; la compra pasa a CONFIRMADA
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Compra' }
+        '400': { $ref: '#/components/responses/Validacion' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '402':
+          description: Pago rechazado (`PAGO_RECHAZADO`); la compra sigue PENDIENTE y se puede reintentar
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409': { $ref: '#/components/responses/Conflicto' }
+
+  /compras/{compraId}/cancelacion:
+    post:
+      tags: [Compras]
+      summary: Cancelar una compra (comprador)
+      description: |
+        PENDIENTE → CANCELADA; CONFIRMADA → REEMBOLSADA. Solo si faltan más de 30 minutos para el evento
+        (valor configurable). Libera el cupo.
+      parameters:
+        - { $ref: '#/components/parameters/CompraId' }
+      responses:
+        '200':
+          description: Compra cancelada o reembolsada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Compra' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409': { $ref: '#/components/responses/Conflicto' }
+
+  /compras/{compraId}/uso:
+    post:
+      tags: [Compras]
+      summary: Marcar una compra como UTILIZADA (organizador del evento)
+      description: Solo desde 30 minutos antes del evento (valor configurable) y si la compra está CONFIRMADA.
+      parameters:
+        - { $ref: '#/components/parameters/CompraId' }
+      responses:
+        '200':
+          description: Compra utilizada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Compra' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409': { $ref: '#/components/responses/Conflicto' }
+
+  /compras/{compraId}/mensajes:
+    get:
+      tags: [Chat]
+      summary: Mensajes de la compra (comprador u organizador del evento)
+      description: El front consulta periódicamente (polling). `desde` devuelve solo mensajes posteriores.
+      parameters:
+        - { $ref: '#/components/parameters/CompraId' }
+        - name: desde
+          in: query
+          schema: { type: string, format: date-time }
+      responses:
+        '200':
+          description: Mensajes en orden cronológico
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Mensaje' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+    post:
+      tags: [Chat]
+      summary: Enviar un mensaje
+      description: Permitido en cualquier estado de la compra.
+      parameters:
+        - { $ref: '#/components/parameters/CompraId' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NuevoMensaje' }
+      responses:
+        '201':
+          description: Mensaje enviado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Mensaje' }
+        '400': { $ref: '#/components/responses/Validacion' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+  /compras/{compraId}/resenia:
+    post:
+      tags: [Reseñas]
+      summary: Reseñar una compra UTILIZADA (comprador)
+      parameters:
+        - { $ref: '#/components/parameters/CompraId' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NuevaResenia' }
+      responses:
+        '201':
+          description: Reseña registrada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Resenia' }
+        '400': { $ref: '#/components/responses/Validacion' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409': { $ref: '#/components/responses/Conflicto' }
+
+  /favoritos:
+    get:
+      tags: [Favoritos]
+      summary: Mis eventos favoritos (comprador)
+      responses:
+        '200':
+          description: Eventos favoritos
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/EventoResumen' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+
+  /favoritos/{eventoId}:
+    put:
+      tags: [Favoritos]
+      summary: Marcar un evento como favorito (idempotente)
+      parameters:
+        - { $ref: '#/components/parameters/EventoId' }
+      responses:
+        '204': { description: Evento marcado como favorito }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+    delete:
+      tags: [Favoritos]
+      summary: Quitar un evento de favoritos (idempotente)
+      parameters:
+        - { $ref: '#/components/parameters/EventoId' }
+      responses:
+        '204': { description: Evento quitado de favoritos }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '403': { $ref: '#/components/responses/Prohibido' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    EventoId:
+      name: eventoId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    CompraId:
+      name: compraId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    Validacion:
+      description: Datos inválidos (`VALIDACION`)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NoAutenticado:
+      description: Sin sesión, sesión vencida o credenciales incorrectas (`NO_AUTENTICADO`, `CREDENCIALES_INVALIDAS`)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Prohibido:
+      description: Rol no permitido o recurso ajeno (`ROL_NO_PERMITIDO`, `NO_AUTORIZADO`, `ORGANIZADOR_NO_PUEDE_COMPRAR`)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NoEncontrado:
+      description: El recurso no existe (`NO_ENCONTRADO`)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflicto:
+      description: Regla de negocio incumplida (`ESTADO_INVALIDO`, `FUERA_DE_PLAZO`, `AUN_NO_HABILITADA`, `YA_RESENIADA`)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [codigo, mensaje]
+          properties:
+            codigo: { type: string, examples: [CUPO_INSUFICIENTE] }
+            mensaje: { type: string, description: Texto listo para mostrar al usuario }
+            detalles:
+              type: array
+              items:
+                type: object
+                required: [campo, mensaje]
+                properties:
+                  campo: { type: string }
+                  mensaje: { type: string }
+
+    Rol:
+      type: string
+      enum: [COMPRADOR, ORGANIZADOR]
+
+    EstadoCompra:
+      type: string
+      enum: [PENDIENTE, CONFIRMADA, UTILIZADA, CANCELADA, REEMBOLSADA]
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 1 }
+
+    LoginResponse:
+      type: object
+      required: [token, usuario]
+      properties:
+        token: { type: string }
+        usuario: { $ref: '#/components/schemas/Usuario' }
+
+    Usuario:
+      type: object
+      required: [id, nombre, apellido, email, rol]
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        apellido: { type: string }
+        email: { type: string, format: email }
+        rol: { $ref: '#/components/schemas/Rol' }
+
+    PersonaResumen:
+      type: object
+      required: [id, nombre, apellido]
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        apellido: { type: string }
+
+    Categoria:
+      type: object
+      required: [id, nombre, descripcion]
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        descripcion: { type: string }
+
+    MedioPago:
+      type: object
+      required: [id, nombre]
+      properties:
+        id: { type: string, enum: [TARJETA_VISA, TARJETA_MASTERCARD, DINERO_EN_CUENTA, TARJETA_RECHAZADA] }
+        nombre: { type: string }
+
+    TipoEntrada:
+      type: object
+      required: [id, nombre, descripcion, precio, cupoTotal, cupoDisponible, agotado]
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        descripcion: { type: string }
+        precio: { type: number, minimum: 0 }
+        cupoTotal: { type: integer, minimum: 1 }
+        cupoDisponible: { type: integer, minimum: 0 }
+        agotado: { type: boolean }
+
+    NuevoTipoEntrada:
+      type: object
+      required: [nombre, descripcion, precio, cupo]
+      properties:
+        nombre: { type: string, minLength: 1, maxLength: 60 }
+        descripcion: { type: string, maxLength: 300 }
+        precio: { type: number, minimum: 0 }
+        cupo: { type: integer, minimum: 1 }
+
+    NuevoEvento:
+      type: object
+      required: [nombre, descripcion, categoriaId, fecha, tiposEntrada]
+      properties:
+        nombre: { type: string, minLength: 1, maxLength: 120 }
+        descripcion: { type: string, minLength: 1, maxLength: 2000 }
+        categoriaId: { type: string, format: uuid }
+        fecha: { type: string, format: date-time, description: Debe ser futura }
+        multimedia:
+          type: array
+          items: { type: string, format: uri }
+          default: []
+        tiposEntrada:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/NuevoTipoEntrada' }
+
+    OrganizadorResumen:
+      type: object
+      required: [id, nombre, apellido, puntaje, cantidadResenias]
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        apellido: { type: string }
+        puntaje:
+          type: [number, 'null']
+          minimum: 1
+          maximum: 5
+          description: Promedio de reseñas con un decimal; null si no tiene reseñas
+        cantidadResenias: { type: integer, minimum: 0 }
+
+    EventoResumen:
+      type: object
+      required: [id, nombre, categoria, fecha, precioDesde, organizador, esFavorito]
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        categoria: { $ref: '#/components/schemas/Categoria' }
+        fecha: { type: string, format: date-time }
+        imagenPrincipal: { type: [string, 'null'], format: uri }
+        precioDesde: { type: number, minimum: 0 }
+        organizador: { $ref: '#/components/schemas/OrganizadorResumen' }
+        esFavorito: { type: boolean, description: Siempre false para organizadores }
+
+    OrganizadorDetalle:
+      allOf:
+        - $ref: '#/components/schemas/OrganizadorResumen'
+        - type: object
+          required: [resenias]
+          properties:
+            resenias:
+              type: array
+              items: { $ref: '#/components/schemas/Resenia' }
+
+    EventoDetalle:
+      type: object
+      required: [id, nombre, descripcion, categoria, fecha, multimedia, tiposEntrada, organizador, esFavorito, compraAbierta, avisoNoCancelable, maxEntradasPorCompra]
+      properties:
+        id: { type: string, format: uuid }
+        nombre: { type: string }
+        descripcion: { type: string }
+        categoria: { $ref: '#/components/schemas/Categoria' }
+        fecha: { type: string, format: date-time }
+        multimedia:
+          type: array
+          items: { type: string, format: uri }
+        tiposEntrada:
+          type: array
+          items: { $ref: '#/components/schemas/TipoEntrada' }
+        organizador: { $ref: '#/components/schemas/OrganizadorDetalle' }
+        esFavorito: { type: boolean }
+        compraAbierta: { type: boolean, description: false si el evento ya empezó }
+        avisoNoCancelable: { type: boolean, description: true si faltan menos de 30 minutos y la compra no podrá cancelarse }
+        maxEntradasPorCompra: { type: integer, minimum: 1 }
+
+    NuevaCompra:
+      type: object
+      required: [eventoId, tipoEntradaId, cantidad]
+      properties:
+        eventoId: { type: string, format: uuid }
+        tipoEntradaId: { type: string, format: uuid }
+        cantidad: { type: integer, minimum: 1 }
+
+    NuevoPago:
+      type: object
+      required: [medioPago]
+      properties:
+        medioPago: { type: string, enum: [TARJETA_VISA, TARJETA_MASTERCARD, DINERO_EN_CUENTA, TARJETA_RECHAZADA] }
+
+    AccionesCompra:
+      type: object
+      required: [puedePagar, puedeCancelar, puedeMarcarUtilizada, puedeResenar]
+      properties:
+        puedePagar: { type: boolean }
+        puedeCancelar: { type: boolean }
+        puedeMarcarUtilizada: { type: boolean }
+        puedeResenar: { type: boolean }
+
+    Compra:
+      type: object
+      required: [id, evento, tipoEntrada, comprador, cantidad, total, estado, creadaEn, expiraEn, diasParaEvento, eventoRealizado, acciones]
+      properties:
+        id: { type: string, format: uuid }
+        evento:
+          type: object
+          required: [id, nombre, fecha]
+          properties:
+            id: { type: string, format: uuid }
+            nombre: { type: string }
+            fecha: { type: string, format: date-time }
+        tipoEntrada:
+          type: object
+          required: [id, nombre, precio]
+          properties:
+            id: { type: string, format: uuid }
+            nombre: { type: string }
+            precio: { type: number, minimum: 0 }
+        comprador: { $ref: '#/components/schemas/PersonaResumen' }
+        cantidad: { type: integer, minimum: 1 }
+        total: { type: number, minimum: 0 }
+        estado: { $ref: '#/components/schemas/EstadoCompra' }
+        creadaEn: { type: string, format: date-time }
+        expiraEn:
+          type: [string, 'null']
+          format: date-time
+          description: Solo en estado PENDIENTE
+        diasParaEvento:
+          type: [integer, 'null']
+          minimum: 0
+          description: Solo en estado CONFIRMADA con el evento aún no empezado; 0 significa hoy
+        eventoRealizado:
+          type: boolean
+          description: true si está CONFIRMADA y el evento ya empezó
+        acciones: { $ref: '#/components/schemas/AccionesCompra' }
+
+    CambioEstadoCompra:
+      type: object
+      required: [estado, quien, fechaHora]
+      properties:
+        estado: { $ref: '#/components/schemas/EstadoCompra' }
+        quien:
+          type: object
+          required: [tipo]
+          properties:
+            tipo: { type: string, enum: [COMPRADOR, ORGANIZADOR, SISTEMA] }
+            id: { type: [string, 'null'], format: uuid }
+            nombre: { type: [string, 'null'] }
+        fechaHora: { type: string, format: date-time }
+
+    CompraDetalle:
+      allOf:
+        - $ref: '#/components/schemas/Compra'
+        - type: object
+          required: [historial, resenia]
+          properties:
+            historial:
+              type: array
+              items: { $ref: '#/components/schemas/CambioEstadoCompra' }
+            resenia:
+              oneOf:
+                - $ref: '#/components/schemas/Resenia'
+                - type: 'null'
+
+    ComprasDeEvento:
+      type: object
+      required: [evento, tiposEntrada, compras]
+      properties:
+        evento:
+          type: object
+          required: [id, nombre, fecha]
+          properties:
+            id: { type: string, format: uuid }
+            nombre: { type: string }
+            fecha: { type: string, format: date-time }
+        tiposEntrada:
+          type: array
+          items: { $ref: '#/components/schemas/TipoEntrada' }
+        compras:
+          type: array
+          items: { $ref: '#/components/schemas/Compra' }
+
+    Mensaje:
+      type: object
+      required: [id, autor, texto, enviadoEn]
+      properties:
+        id: { type: string, format: uuid }
+        autor:
+          type: object
+          required: [id, nombre, apellido, rol]
+          properties:
+            id: { type: string, format: uuid }
+            nombre: { type: string }
+            apellido: { type: string }
+            rol: { $ref: '#/components/schemas/Rol' }
+        texto: { type: string }
+        enviadoEn: { type: string, format: date-time }
+
+    NuevoMensaje:
+      type: object
+      required: [texto]
+      properties:
+        texto: { type: string, minLength: 1, maxLength: 500 }
+
+    NuevaResenia:
+      type: object
+      required: [puntaje, comentario]
+      properties:
+        puntaje: { type: integer, minimum: 1, maximum: 5 }
+        comentario: { type: string, minLength: 1, maxLength: 500 }
+
+    Resenia:
+      type: object
+      required: [id, compraId, comprador, evento, puntaje, comentario, creadaEn]
+      properties:
+        id: { type: string, format: uuid }
+        compraId: { type: string, format: uuid }
+        comprador: { $ref: '#/components/schemas/PersonaResumen' }
+        evento:
+          type: object
+          required: [id, nombre]
+          properties:
+            id: { type: string, format: uuid }
+            nombre: { type: string }
+        puntaje: { type: integer, minimum: 1, maximum: 5 }
+        comentario: { type: string }
+        creadaEn: { type: string, format: date-time }
