@@ -1,5 +1,6 @@
 import { avisoNoCancelable, compraAbierta, cupoDisponible, precioDesde } from '../domain/evento.js';
 import { promedioPuntaje } from '../domain/puntaje.js';
+import { calcularAcciones, seguimiento } from '../domain/compra.js';
 
 // Traduce entidades del dominio a la forma del contrato (contracts/openapi.yaml). No decide reglas:
 // usa las funciones del dominio para los campos derivados (R15).
@@ -84,5 +85,52 @@ export function crearPresentacion({ repos, reloj, reglas }) {
     };
   }
 
-  return { persona, categoria, resenia, organizadorResumen, tipoEntrada, eventoResumen, eventoDetalle };
+  function compra(c, usuario) {
+    const ahora = reloj.ahora();
+    const evento = repos.eventos.porId(c.eventoId);
+    const tipo = evento.tiposEntrada.find((t) => t.id === c.tipoEntradaId);
+    const reseniaGuardada = repos.resenias.porCompra(c.id);
+    return {
+      id: c.id,
+      evento: { id: evento.id, nombre: evento.nombre, fecha: evento.fecha.toISOString() },
+      tipoEntrada: { id: tipo.id, nombre: tipo.nombre, precio: tipo.precio },
+      comprador: persona(repos.usuarios.porId(c.compradorId)),
+      cantidad: c.cantidad,
+      total: c.total,
+      estado: c.estado,
+      creadaEn: c.creadaEn.toISOString(),
+      expiraEn: c.estado === 'PENDIENTE' ? c.expiraEn.toISOString() : null,
+      ...seguimiento(c, evento, ahora),
+      acciones: calcularAcciones(c, evento, usuario, ahora, reglas, {
+        tieneResenia: Boolean(reseniaGuardada),
+      }),
+    };
+  }
+
+  const cambioEstado = (h) => ({
+    estado: h.estado,
+    quien: { tipo: h.quien.tipo, id: h.quien.id, nombre: h.quien.nombre },
+    fechaHora: h.fechaHora.toISOString(),
+  });
+
+  function compraDetalle(c, usuario) {
+    const reseniaGuardada = repos.resenias.porCompra(c.id);
+    return {
+      ...compra(c, usuario),
+      historial: c.historial.map(cambioEstado),
+      resenia: reseniaGuardada ? resenia(reseniaGuardada) : null,
+    };
+  }
+
+  return {
+    persona,
+    categoria,
+    resenia,
+    organizadorResumen,
+    tipoEntrada,
+    eventoResumen,
+    eventoDetalle,
+    compra,
+    compraDetalle,
+  };
 }

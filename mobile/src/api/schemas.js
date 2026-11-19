@@ -73,3 +73,44 @@ export const eventoDetalleSchema = z.object({
 
 // Al crear solo se usa el id para navegar; el resto del detalle se pide de nuevo.
 export const eventoCreadoSchema = z.looseObject({ id: z.string() });
+
+export const estadoCompraSchema = z.enum([
+  'PENDIENTE',
+  'CONFIRMADA',
+  'UTILIZADA',
+  'CANCELADA',
+  'REEMBOLSADA',
+]);
+
+export const medioPagoSchema = z.object({ id: z.string(), nombre: z.string() });
+
+export const compraSchema = z.object({
+  id: z.string(),
+  evento: z.object({ id: z.string(), nombre: z.string(), fecha: z.string() }),
+  tipoEntrada: z.object({ id: z.string(), nombre: z.string(), precio: z.number() }),
+  comprador: personaSchema,
+  cantidad: z.number().int(),
+  total: z.number(),
+  estado: estadoCompraSchema,
+  creadaEn: z.string(),
+  expiraEn: z.string().nullable(),
+  diasParaEvento: z.number().int().nullable(),
+  eventoRealizado: z.boolean(),
+  acciones: z.object({
+    puedePagar: z.boolean(),
+    puedeCancelar: z.boolean(),
+    puedeMarcarUtilizada: z.boolean(),
+    puedeResenar: z.boolean(),
+  }),
+});
+
+export const compraDetalleSchema = compraSchema.extend({
+  historial: z.array(
+    z.object({
+      estado: estadoCompraSchema,
+      quien: z.object({ tipo: z.string(), id: z.string().nullable(), nombre: z.string().nullable() }),
+      fechaHora: z.string(),
+    }),
+  ),
+  resenia: reseniaSchema.nullable(),
+});

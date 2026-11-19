@@ -57,6 +57,7 @@ function Navegacion() {
       </Stack.Protected>
       <Stack.Protected guard={Boolean(usuario)}>
         <Stack.Screen name="evento/[id]" options={{ title: 'Evento' }} />
+        <Stack.Screen name="compra/[id]" options={{ title: 'Compra' }} />
       </Stack.Protected>
     </Stack>
   );

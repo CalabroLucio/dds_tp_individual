@@ -91,6 +91,15 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - `ListaResenias` se creó ya en esta historia porque el detalle del evento debe mostrar las reseñas (caso de uso 10); la Historia 9 la reutiliza.
 - Tests: backend 67, mobile 35.
 
+### Historia 3 — comprar y pagar
+- Cupo derivado, no contador: el disponible se calcula de las compras activas, así que "liberar cupo" es solo cambiar el estado. No hay contador que pueda desincronizarse.
+- Reserva atómica: `crearCompraReservandoCupo` es síncrona. Prueba de concurrencia real (50 solicitudes HTTP simultáneas sobre cupo 10 → 10 × 201 y 40 × 409) y una prueba de control con una versión "ingenua" con `await` entre chequeo y reserva, que vende de más: demuestra que el test detectaría el error.
+- Organizador comprando: el rol se valida en el servicio para devolver `ORGANIZADOR_NO_PUEDE_COMPRAR` en su propio evento y `ROL_NO_PERMITIDO` en otros; con `requerirRol` en la ruta el mensaje específico nunca se vería.
+- Pago con una PENDIENTE vencida antes de que corra el job: se cancela en ese momento y responde 409 (hallazgo U1 del análisis).
+- `diasParaEvento` y `eventoRealizado` se implementaron ya en esta historia porque el contrato los exige en toda respuesta de compra; la Historia 4 los prueba.
+- La pantalla de compra mobile usa `GET /compras/{id}`, que se implementa en la Historia 4 (siguiente); los tests de mobile lo simulan.
+- Tests: backend 105, mobile 43.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

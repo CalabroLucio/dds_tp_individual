@@ -7,11 +7,14 @@ import { Cargando } from '../../components/Cargando';
 import { MensajeError } from '../../components/MensajeError';
 import { Puntaje } from '../../components/Puntaje';
 import { ListaResenias } from '../../components/ListaResenias';
+import { SeccionCompra } from '../../components/SeccionCompra';
+import { useSession } from '../../session/SessionProvider';
 import { formatearFecha, formatearPrecio } from '../../utils/formato';
 
 export default function PantallaEvento() {
   const { id } = useLocalSearchParams();
   const evento = useEvento(id);
+  const { usuario } = useSession();
 
   if (evento.isPending) return <Cargando />;
   if (evento.isError) return <MensajeError error={evento.error} onReintentar={evento.refetch} />;
@@ -90,6 +93,8 @@ export default function PantallaEvento() {
           </View>
         ))}
       </Card>
+
+      {usuario?.rol === 'COMPRADOR' ? <SeccionCompra evento={e} /> : null}
 
       <Text variant="titleMedium">Reseñas del organizador</Text>
       <ListaResenias resenias={e.organizador.resenias} />

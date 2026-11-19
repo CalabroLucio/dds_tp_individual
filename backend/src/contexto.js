@@ -11,6 +11,8 @@ import { crearAuthService } from './services/auth.service.js';
 import { crearPresentacion } from './services/presentacion.js';
 import { crearEventosService } from './services/eventos.service.js';
 import { crearCategoriasService } from './services/categorias.service.js';
+import { crearComprasService } from './services/compras.service.js';
+import { crearCiclo } from './jobs/ciclo.job.js';
 import { crearAutenticar } from './middleware/autenticar.js';
 import { requerirRol } from './middleware/requerirRol.js';
 import { manejarErrores } from './middleware/manejarErrores.js';
@@ -36,7 +38,10 @@ export function crearContexto({
     auth: crearAuthService({ usuariosRepo: repos.usuarios, entorno }),
     categorias: crearCategoriasService({ repos, presentacion }),
     eventos: crearEventosService({ repos, reloj, presentacion }),
+    compras: crearComprasService({ repos, reloj, reglas, presentacion }),
   };
+
+  const jobs = { ciclo: crearCiclo({ repos, reglas }) };
 
   const middleware = {
     autenticar: crearAutenticar({ authService: services.auth, usuariosRepo: repos.usuarios }),
@@ -44,5 +49,5 @@ export function crearContexto({
     manejarErrores,
   };
 
-  return { reloj, reglas, entorno, store, repos, presentacion, services, middleware };
+  return { reloj, reglas, entorno, store, repos, presentacion, services, jobs, middleware };
 }

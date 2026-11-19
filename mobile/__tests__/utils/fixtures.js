@@ -101,3 +101,35 @@ export const eventoDetalle = (cambios = {}) => ({
   maxEntradasPorCompra: 10,
   ...cambios,
 });
+
+// Agrega la verificación de sesión (GET /auth/me) a las rutas simuladas.
+export const conSesion = (usuario, rutas) => ({ 'GET /auth/me': [200, usuario], ...rutas });
+
+export const mediosPago = [
+  { id: 'TARJETA_VISA', nombre: 'Tarjeta Visa de prueba' },
+  { id: 'TARJETA_RECHAZADA', nombre: 'Tarjeta rechazada (siempre falla)' },
+];
+
+export const compraFixture = (cambios = {}) => ({
+  id: 'c1',
+  evento: { id: 'evt-rock', nombre: 'Rock en el Estadio', fecha: '2026-12-10T23:00:00.000Z' },
+  tipoEntrada: { id: 'tipo-campo', nombre: 'Campo', precio: 20000 },
+  comprador: { id: usuarioAna.id, nombre: 'Ana', apellido: 'Gómez' },
+  cantidad: 2,
+  total: 40000,
+  estado: 'PENDIENTE',
+  creadaEn: '2026-12-01T18:00:00.000Z',
+  expiraEn: new Date(Date.now() + 10 * 60_000).toISOString(),
+  diasParaEvento: null,
+  eventoRealizado: false,
+  acciones: { puedePagar: true, puedeCancelar: true, puedeMarcarUtilizada: false, puedeResenar: false },
+  historial: [
+    {
+      estado: 'PENDIENTE',
+      quien: { tipo: 'COMPRADOR', id: usuarioAna.id, nombre: 'Ana Gómez' },
+      fechaHora: '2026-12-01T18:00:00.000Z',
+    },
+  ],
+  resenia: null,
+  ...cambios,
+});
