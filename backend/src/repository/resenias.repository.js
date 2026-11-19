@@ -1,6 +1,11 @@
-// Reseñas en memoria. El alta se agrega en la Historia 9.
+// Reseñas en memoria (data-model.md · Resenia.compraId: una por compra).
 export function crearReseniasRepository(store) {
   return {
+    guardar(resenia) {
+      store.resenias.set(resenia.id, resenia);
+      return resenia;
+    },
+
     porCompra(compraId) {
       for (const resenia of store.resenias.values()) {
         if (resenia.compraId === compraId) return resenia;

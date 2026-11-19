@@ -45,6 +45,11 @@ export function useMarcarUtilizada(id) {
   return useMutation({ mutationFn: () => comprasApi.marcarUtilizada(id), onSettled: invalidar });
 }
 
+export function useReseniar(id) {
+  const invalidar = useInvalidarCompras();
+  return useMutation({ mutationFn: (resenia) => comprasApi.reseniar(id, resenia), onSuccess: invalidar });
+}
+
 export function usePagar(id) {
   const invalidar = useInvalidarCompras();
   return useMutation({ mutationFn: (medioPago) => comprasApi.pagar(id, medioPago), onSettled: invalidar });

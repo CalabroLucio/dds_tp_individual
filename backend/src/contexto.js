@@ -13,6 +13,7 @@ import { crearEventosService } from './services/eventos.service.js';
 import { crearCategoriasService } from './services/categorias.service.js';
 import { crearComprasService } from './services/compras.service.js';
 import { crearMensajesService } from './services/mensajes.service.js';
+import { crearReseniasService } from './services/resenias.service.js';
 import { crearCiclo } from './jobs/ciclo.job.js';
 import { crearAutenticar } from './middleware/autenticar.js';
 import { requerirRol } from './middleware/requerirRol.js';
@@ -40,6 +41,7 @@ export function crearContexto({
     categorias: crearCategoriasService({ repos, presentacion }),
     eventos: crearEventosService({ repos, reloj, presentacion }),
     compras: crearComprasService({ repos, reloj, reglas, presentacion }),
+    resenias: crearReseniasService({ repos, reloj, presentacion }),
   };
   services.mensajes = crearMensajesService({ repos, reloj, comprasService: services.compras });
 

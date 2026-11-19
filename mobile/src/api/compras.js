@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { api } from './cliente';
-import { compraDetalleSchema, compraSchema, medioPagoSchema } from './schemas';
+import { compraDetalleSchema, compraSchema, medioPagoSchema, reseniaSchema } from './schemas';
 
 export const comprasApi = {
   mias: () => api.get('/compras', { schema: z.array(compraSchema) }),
@@ -9,6 +9,7 @@ export const comprasApi = {
     api.post('/compras', { body: { eventoId, tipoEntradaId, cantidad }, schema: compraSchema }),
   detalle: (id) => api.get(`/compras/${id}`, { schema: compraDetalleSchema }),
   marcarUtilizada: (id) => api.post(`/compras/${id}/uso`, { schema: compraSchema }),
+  reseniar: (id, resenia) => api.post(`/compras/${id}/resenia`, { body: resenia, schema: reseniaSchema }),
   cancelar: (id) => api.post(`/compras/${id}/cancelacion`, { schema: compraSchema }),
   pagar: (id, medioPago) => api.post(`/compras/${id}/pagos`, { body: { medioPago }, schema: compraSchema }),
 };

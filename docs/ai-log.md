@@ -131,6 +131,12 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - Mobile: polling cada 3 s con TanStack Query (`refetchInterval`), sin WebSockets (decisión del log). El intervalo es un parámetro del componente para que el test lo baje a 50 ms y no dependa de temporizadores falsos. El mensaje enviado se agrega a la caché sin esperar al siguiente ciclo.
 - Tests: backend 152, mobile 54.
 
+### Historia 9 — reseñas y reputación
+- Solo el comprador, con la compra UTILIZADA y una por compra; puntaje entero 1 a 5 y comentario. El promedio del organizador (5 y 3 → 4) se refleja en el detalle de todos sus eventos y en el orden por puntaje del catálogo.
+- Mobile: estrellas tocables y comentario; tras enviar se muestra "Tu reseña" en lugar del formulario. `ListaResenias` (creada en la Historia 2) muestra las reseñas en el detalle del evento.
+- Corrección de capas: el handler de reseñas había quedado dentro de la ruta; se movió a su controller (constitution I).
+- Tests: backend 158, mobile 56.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

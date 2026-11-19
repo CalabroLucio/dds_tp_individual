@@ -288,15 +288,15 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 ### Tests (escribir primero; deben fallar)
 
-- [ ] T086 [P] [US9] Test de integración `backend/test/integration/resenias.test.js`: escenarios 1–7 de la story 9 (compra no utilizada, duplicada, puntaje fuera de rango o no entero, compra ajena), promedio 5 y 3 → 4, las reseñas aparecen en el detalle del evento y el orden por puntaje cambia, contra el contrato
-- [ ] T087 [P] [US9] Test `mobile/__tests__/comprador/resenia.test.js`: formulario de 1 a 5 con comentario solo con `acciones.puedeResenar`, desaparece tras enviar y la reseña se ve en el detalle del evento
+- [X] T086 [P] [US9] Test de integración `backend/test/integration/resenias.test.js`: escenarios 1–7 de la story 9 (compra no utilizada, duplicada, puntaje fuera de rango o no entero, compra ajena), promedio 5 y 3 → 4, las reseñas aparecen en el detalle del evento y el orden por puntaje cambia, contra el contrato
+- [X] T087 [P] [US9] Test `mobile/__tests__/comprador/resenia.test.js`: formulario de 1 a 5 con comentario solo con `acciones.puedeResenar`, desaparece tras enviar y la reseña se ve en el detalle del evento
 
 ### Implementación
 
-- [ ] T088 [P] [US9] Crear `backend/src/schemas/resenia.schema.js` (Zod para `NuevaResenia`; data-model.md · `Resenia.puntaje`, `Resenia.comentario` y `Resenia.compraId`)
-- [ ] T089 [US9] Crear `backend/src/services/resenias.service.js`, el almacenamiento de reseñas en el repositorio, la ruta `POST /compras/:compraId/resenia`, `acciones.puedeResenar` en `backend/src/domain/compra.js` y la inclusión de `organizador.resenias` y `puntaje` en `eventos.service.js`, hasta pasar T086
-- [ ] T090 [P] [US9] Crear `mobile/src/components/FormularioResenia.js` y `mobile/src/components/ListaResenias.js`
-- [ ] T091 [US9] Integrar el formulario en `mobile/src/app/compra/[id].js` y la lista en `mobile/src/app/evento/[id].js`, hasta pasar T087
+- [X] T088 [P] [US9] Crear `backend/src/schemas/resenia.schema.js` (Zod para `NuevaResenia`; data-model.md · `Resenia.puntaje`, `Resenia.comentario` y `Resenia.compraId`)
+- [X] T089 [US9] Crear `backend/src/services/resenias.service.js`, el almacenamiento de reseñas en el repositorio, la ruta `POST /compras/:compraId/resenia`, `acciones.puedeResenar` en `backend/src/domain/compra.js` y la inclusión de `organizador.resenias` y `puntaje` en `eventos.service.js`, hasta pasar T086
+- [X] T090 [P] [US9] Crear `mobile/src/components/FormularioResenia.js` y `mobile/src/components/ListaResenias.js`
+- [X] T091 [US9] Integrar el formulario en `mobile/src/app/compra/[id].js` y la lista en `mobile/src/app/evento/[id].js`, hasta pasar T087
 
 **Checkpoint**: US9 funcional. Commit de hito.
 

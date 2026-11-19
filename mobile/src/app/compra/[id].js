@@ -12,6 +12,7 @@ import { ErroresFormulario } from '../../components/ErroresFormulario';
 import { AccionCancelar } from '../../components/AccionCancelar';
 import { Historial } from '../../components/Historial';
 import { Chat } from '../../components/Chat';
+import { FormularioResenia, ReseniaPropia } from '../../components/FormularioResenia';
 import { formatearFecha, formatearPrecio, textoSeguimiento } from '../../utils/formato';
 
 // Detalle de una compra. Cada historia agrega su sección (pago, cancelación, historial, chat, reseña) y cada
@@ -55,6 +56,8 @@ export default function PantallaCompra() {
       {c.acciones.puedePagar ? <SeccionPago compra={c} /> : null}
       {c.acciones.puedeCancelar ? <AccionCancelar compra={c} /> : null}
       {c.acciones.puedeMarcarUtilizada ? <AccionUtilizar compraId={c.id} /> : null}
+      {c.acciones.puedeResenar ? <FormularioResenia compraId={c.id} /> : null}
+      {c.resenia ? <ReseniaPropia resenia={c.resenia} /> : null}
       <Historial historial={c.historial} />
       <Chat compraId={c.id} />
     </ScrollView>

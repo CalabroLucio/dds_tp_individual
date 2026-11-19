@@ -4,6 +4,8 @@ import { compraIdParams, nuevaCompraSchema, nuevoPagoSchema } from '../schemas/c
 import { crearComprasController } from '../controllers/compras.controller.js';
 import { crearMensajesController } from '../controllers/mensajes.controller.js';
 import { mensajesQuerySchema, nuevoMensajeSchema } from '../schemas/mensaje.schema.js';
+import { nuevaReseniaSchema } from '../schemas/resenia.schema.js';
+import { crearReseniasController } from '../controllers/resenias.controller.js';
 
 export function crearRutasCompras({ services, middleware }) {
   const router = Router();
@@ -34,6 +36,13 @@ export function crearRutasCompras({ services, middleware }) {
     autenticar,
     validar({ params: compraIdParams, body: nuevoMensajeSchema }),
     mensajes.enviar,
+  );
+  const resenias = crearReseniasController({ reseniasService: services.resenias });
+  router.post(
+    '/:compraId/resenia',
+    autenticar,
+    validar({ params: compraIdParams, body: nuevaReseniaSchema }),
+    resenias.crear,
   );
   router.post('/:compraId/uso', autenticar, validar({ params: compraIdParams }), controller.marcarUtilizada);
 
