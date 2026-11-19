@@ -43,3 +43,6 @@ mobile/ios/
 
 # Configuración local del editor (contiene rutas absolutas)
 .vscode/
+
+# Binarios descargados (Expo Go APK)
+*.apk

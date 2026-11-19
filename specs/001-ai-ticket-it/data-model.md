@@ -46,7 +46,7 @@ Derivados: `precioDesde` (mínimo `precio` de los tipos), `compraAbierta` (`ahor
 |---|---|---|
 | id | uuid | |
 | nombre | string | 1–60 caracteres; único dentro del evento |
-| descripcion | string | |
+| descripcion | string | 0–300 caracteres |
 | precio | number | ≥ 0, hasta 2 decimales |
 | cupo | integer | > 0 (cupo total) |
 

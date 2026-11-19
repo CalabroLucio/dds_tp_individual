@@ -61,7 +61,8 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - [x] Consigna guardada en `.local/consigna.md` (ignorada por git) y `.gitignore` creado.
 - [x] `/speckit-specify` (10 user stories P1/P2/P3) y `/speckit-clarify` (4 decisiones).
 - [x] `/speckit-plan`: research, data-model, contracts/openapi.yaml y quickstart.
-- [ ] `/speckit-tasks`, `/speckit-analyze`.
+- [x] `/speckit-tasks`: 105 tareas en 13 fases (tests primero).
+- [ ] `/speckit-analyze`.
 - [ ] `/speckit-implement` con Opus.
 - [ ] Skills propias, `CLAUDE.md` raíz, `codegraph init -i` tras el scaffold.
 
