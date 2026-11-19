@@ -8,6 +8,7 @@ import { MensajeError } from '../../components/MensajeError';
 import { Puntaje } from '../../components/Puntaje';
 import { ListaResenias } from '../../components/ListaResenias';
 import { SeccionCompra } from '../../components/SeccionCompra';
+import { BotonFavorito } from '../../components/BotonFavorito';
 import { useSession } from '../../session/SessionProvider';
 import { formatearFecha, formatearPrecio } from '../../utils/formato';
 
@@ -32,9 +33,14 @@ export default function PantallaEvento() {
       ) : null}
 
       <View style={estilos.bloque}>
-        <Text variant="headlineSmall" style={estilos.titulo}>
-          {e.nombre}
-        </Text>
+        <View style={estilos.filaTitulo}>
+          <Text variant="headlineSmall" style={[estilos.titulo, estilos.flex]}>
+            {e.nombre}
+          </Text>
+          {usuario?.rol === 'COMPRADOR' ? (
+            <BotonFavorito key={`${e.id}-${e.esFavorito}`} eventoId={e.id} esFavorito={e.esFavorito} />
+          ) : null}
+        </View>
         <View style={estilos.chips}>
           <Chip compact icon="tag-outline">
             {e.categoria.nombre}
@@ -108,6 +114,7 @@ const estilos = StyleSheet.create({
   imagen: { width: 360, height: 200 },
   bloque: { gap: 8 },
   titulo: { fontWeight: '800' },
+  filaTitulo: { flexDirection: 'row', alignItems: 'center' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   derecha: { paddingRight: 16 },
   tipo: { flexDirection: 'row', padding: 12, gap: 12, alignItems: 'center' },

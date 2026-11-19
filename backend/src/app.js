@@ -8,6 +8,7 @@ import { crearRutasAuth } from './routes/auth.routes.js';
 import { crearRutasCategorias } from './routes/categorias.routes.js';
 import { crearRutasEventos } from './routes/eventos.routes.js';
 import { crearRutasCompras, crearRutasMediosPago } from './routes/compras.routes.js';
+import { crearRutasFavoritos } from './routes/favoritos.routes.js';
 import { manejarErrores, rutaInexistente } from './middleware/manejarErrores.js';
 
 // Crea la app de Express sin escuchar en ningún puerto (supertest la usa directamente).
@@ -29,6 +30,7 @@ export function crearApp(contexto) {
   app.use('/eventos', crearRutasEventos(contexto));
   app.use('/compras', crearRutasCompras(contexto));
   app.use('/medios-pago', crearRutasMediosPago(contexto));
+  app.use('/favoritos', crearRutasFavoritos(contexto));
 
   app.use(rutaInexistente);
   app.use(manejarErrores);

@@ -310,14 +310,14 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 ### Tests (escribir primero; deben fallar)
 
-- [ ] T092 [P] [US10] Test de integración `backend/test/integration/favoritos.test.js`: `PUT` idempotente sin duplicados, `DELETE`, `GET /favoritos`, aislamiento entre compradores, organizador → 403, evento inexistente → 404, y `esFavorito` en listado y detalle, contra el contrato
-- [ ] T093 [P] [US10] Test `mobile/__tests__/comprador/favoritos.test.js`: el corazón alterna el estado y la pantalla "Favoritos" refleja los cambios
+- [X] T092 [P] [US10] Test de integración `backend/test/integration/favoritos.test.js`: `PUT` idempotente sin duplicados, `DELETE`, `GET /favoritos`, aislamiento entre compradores, organizador → 403, evento inexistente → 404, y `esFavorito` en listado y detalle, contra el contrato
+- [X] T093 [P] [US10] Test `mobile/__tests__/comprador/favoritos.test.js`: el corazón alterna el estado y la pantalla "Favoritos" refleja los cambios
 
 ### Implementación
 
-- [ ] T094 [US10] Implementar favoritos en `backend/src/repository/usuarios.repository.js` (data-model.md · `Usuario.favoritos` como conjunto sin duplicados), `backend/src/services/favoritos.service.js`, `backend/src/controllers/favoritos.controller.js` y `backend/src/routes/favoritos.routes.js` (`GET /favoritos`, `PUT` y `DELETE /favoritos/:eventoId`), y completar `esFavorito` en `eventos.service.js`, hasta pasar T092
-- [ ] T095 [P] [US10] Crear `mobile/src/components/BotonFavorito.js` y `mobile/src/app/(comprador)/favoritos.js` (y su tab)
-- [ ] T096 [US10] Integrar `BotonFavorito` en `mobile/src/components/TarjetaEvento.js` y `mobile/src/app/evento/[id].js`, hasta pasar T093
+- [X] T094 [US10] Implementar favoritos en `backend/src/repository/usuarios.repository.js` (data-model.md · `Usuario.favoritos` como conjunto sin duplicados), `backend/src/services/favoritos.service.js`, `backend/src/controllers/favoritos.controller.js` y `backend/src/routes/favoritos.routes.js` (`GET /favoritos`, `PUT` y `DELETE /favoritos/:eventoId`), y completar `esFavorito` en `eventos.service.js`, hasta pasar T092
+- [X] T095 [P] [US10] Crear `mobile/src/components/BotonFavorito.js` y `mobile/src/app/(comprador)/favoritos.js` (y su tab)
+- [X] T096 [US10] Integrar `BotonFavorito` en `mobile/src/components/TarjetaEvento.js` y `mobile/src/app/evento/[id].js`, hasta pasar T093
 
 **Checkpoint**: las 10 historias completas. Commit de hito.
 

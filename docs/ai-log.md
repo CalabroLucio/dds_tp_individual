@@ -137,6 +137,11 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - Corrección de capas: el handler de reseñas había quedado dentro de la ruta; se movió a su controller (constitution I).
 - Tests: backend 158, mobile 56.
 
+### Historia 10 — favoritos (adición propia)
+- `PUT`/`DELETE /favoritos/{eventoId}` idempotentes (data-model.md · Usuario.favoritos es un conjunto, sin duplicados) y `GET /favoritos`. Solo compradores; `esFavorito` se refleja en el catálogo y en el detalle.
+- Mobile: corazón en las tarjetas del catálogo, en el detalle y en la nueva pestaña "Favoritos". El botón usa `key` con el valor del servidor para resincronizarse cuando cambia la lista.
+- **Las 10 historias están completas.** Tests: backend 162, mobile 58.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

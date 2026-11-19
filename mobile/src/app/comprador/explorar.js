@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { useBuscarEventos, useCategorias } from '../../hooks/useEventos';
 import { useDemora } from '../../hooks/useDemora';
 import { TarjetaEvento } from '../../components/TarjetaEvento';
+import { BotonFavorito } from '../../components/BotonFavorito';
 import { Cargando } from '../../components/Cargando';
 import { MensajeError } from '../../components/MensajeError';
 import { EstadoVacio } from '../../components/EstadoVacio';
@@ -116,7 +117,17 @@ export default function PantallaExplorar() {
         )
       }
       renderItem={({ item }) => (
-        <TarjetaEvento evento={item} onPress={() => router.push(`/evento/${item.id}`)} />
+        <TarjetaEvento
+          evento={item}
+          onPress={() => router.push(`/evento/${item.id}`)}
+          accion={
+            <BotonFavorito
+              key={`${item.id}-${item.esFavorito}`}
+              eventoId={item.id}
+              esFavorito={item.esFavorito}
+            />
+          }
+        />
       )}
     />
   );

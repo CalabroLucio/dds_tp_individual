@@ -1,4 +1,4 @@
-// data-model.md · Usuario.email es único y se guarda en minúsculas.
+// data-model.md · Usuario.email es único y se guarda en minúsculas; Usuario.favoritos es un conjunto (sin duplicados).
 export function crearUsuariosRepository(store) {
   const normalizarEmail = (email) => String(email).trim().toLowerCase();
 
@@ -17,6 +17,14 @@ export function crearUsuariosRepository(store) {
 
     porId(id) {
       return store.usuarios.get(id) ?? null;
+    },
+
+    agregarFavorito(usuarioId, eventoId) {
+      store.usuarios.get(usuarioId)?.favoritos.add(eventoId);
+    },
+
+    quitarFavorito(usuarioId, eventoId) {
+      store.usuarios.get(usuarioId)?.favoritos.delete(eventoId);
     },
 
     buscarPorEmail(email) {
