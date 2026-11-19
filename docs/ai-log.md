@@ -77,6 +77,13 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - Sin celular se verificó igual que la app compila completa con `expo export --platform android`.
 - Tests: backend 27, mobile 25, todos en verde, lint limpio. Pendientes del autor: T003 y T028 (celular) y T029 (`codegraph init -i`, ya hay código).
 
+### Historia 1 — publicar evento
+- Backend: dominio de evento (precio desde, cupo disponible, compra abierta, aviso de no cancelable) y `presentacion.js`, que arma las respuestas del contrato usando el dominio (el front recibe todo calculado).
+- Validación en dos niveles: Zod en el borde (formatos, rangos, nombres de tipo repetidos) y el servicio para lo que depende del estado (fecha futura según el reloj, categoría existente). Ambos devuelven `VALIDACION` con detalles por campo.
+- Mobile: los botones de Paper con ícono incluyen el glifo de la fuente en su nombre accesible, por eso los tests buscan por regex (`/Publicar evento/`). Lo detectó un test fallando, no la IA de antemano.
+- El linter de React (`set-state-in-effect`) obligó a cambiar un efecto por un valor derivado: buena práctica que la IA no había aplicado de primera.
+- Tests: backend 49, mobile 28.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

@@ -5,6 +5,8 @@ import swaggerUi from 'swagger-ui-express';
 import YAML from 'yaml';
 import { RUTA_CONTRATO } from './config/env.js';
 import { crearRutasAuth } from './routes/auth.routes.js';
+import { crearRutasCategorias } from './routes/categorias.routes.js';
+import { crearRutasEventos } from './routes/eventos.routes.js';
 import { manejarErrores, rutaInexistente } from './middleware/manejarErrores.js';
 
 // Crea la app de Express sin escuchar en ningún puerto (supertest la usa directamente).
@@ -22,6 +24,8 @@ export function crearApp(contexto) {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(contrato, { customSiteTitle: 'AI Ticket It API' }));
 
   app.use('/auth', crearRutasAuth(contexto));
+  app.use('/categorias', crearRutasCategorias(contexto));
+  app.use('/eventos', crearRutasEventos(contexto));
 
   app.use(rutaInexistente);
   app.use(manejarErrores);

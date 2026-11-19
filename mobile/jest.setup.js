@@ -1,3 +1,4 @@
+process.env.TZ = 'America/Argentina/Buenos_Aires';
 // URL de la API fija para los tests (el cliente HTTP se mockea con fetch).
 process.env.EXPO_PUBLIC_API_URL = 'http://api.test';
 

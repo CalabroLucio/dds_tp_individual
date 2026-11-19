@@ -4,7 +4,13 @@ import { relojSistema } from './utils/reloj.js';
 import { crearStore } from './repository/store.js';
 import { crearUsuariosRepository } from './repository/usuarios.repository.js';
 import { crearCategoriasRepository } from './repository/categorias.repository.js';
+import { crearEventosRepository } from './repository/eventos.repository.js';
+import { crearComprasRepository } from './repository/compras.repository.js';
+import { crearReseniasRepository } from './repository/resenias.repository.js';
 import { crearAuthService } from './services/auth.service.js';
+import { crearPresentacion } from './services/presentacion.js';
+import { crearEventosService } from './services/eventos.service.js';
+import { crearCategoriasService } from './services/categorias.service.js';
 import { crearAutenticar } from './middleware/autenticar.js';
 import { requerirRol } from './middleware/requerirRol.js';
 import { manejarErrores } from './middleware/manejarErrores.js';
@@ -19,10 +25,17 @@ export function crearContexto({
   const repos = {
     usuarios: crearUsuariosRepository(store),
     categorias: crearCategoriasRepository(store),
+    eventos: crearEventosRepository(store),
+    compras: crearComprasRepository(store),
+    resenias: crearReseniasRepository(store),
   };
+
+  const presentacion = crearPresentacion({ repos, reloj, reglas });
 
   const services = {
     auth: crearAuthService({ usuariosRepo: repos.usuarios, entorno }),
+    categorias: crearCategoriasService({ repos, presentacion }),
+    eventos: crearEventosService({ repos, reloj, presentacion }),
   };
 
   const middleware = {
@@ -31,5 +44,5 @@ export function crearContexto({
     manejarErrores,
   };
 
-  return { reloj, reglas, entorno, store, repos, services, middleware };
+  return { reloj, reglas, entorno, store, repos, presentacion, services, middleware };
 }

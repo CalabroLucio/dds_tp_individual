@@ -6,6 +6,10 @@ import { tema } from '../../theme/tema';
 export default function TabsOrganizador() {
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: tema.colors.primary }}>
+      <Tabs.Screen
+        name="mis-eventos"
+        options={{ title: 'Mis eventos', tabBarIcon: icono('calendar-star') }}
+      />
       <Tabs.Screen name="perfil" options={{ title: 'Perfil', tabBarIcon: icono('account-circle-outline') }} />
     </Tabs>
   );

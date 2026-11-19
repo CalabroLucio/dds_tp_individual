@@ -53,6 +53,7 @@ function Navegacion() {
       </Stack.Protected>
       <Stack.Protected guard={esOrganizador}>
         <Stack.Screen name="organizador" options={{ headerShown: false }} />
+        <Stack.Screen name="evento/nuevo" options={{ title: 'Nuevo evento' }} />
       </Stack.Protected>
     </Stack>
   );

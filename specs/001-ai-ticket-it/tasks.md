@@ -95,22 +95,22 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 ### Tests (escribir primero; deben fallar)
 
-- [ ] T030 [P] [US1] Test unitario `backend/test/unit/evento.domain.test.js`: `precioDesde`, `cupoDisponible`, `hayCupoPara`, `compraAbierta` y `avisoNoCancelable` con límites exactos (30 min antes → aviso; evento empezado → cerrado)
-- [ ] T031 [P] [US1] Test unitario `backend/test/unit/puntaje.test.js`: promedio de reseñas redondeado a 1 decimal (5 y 3 → 4) y `null` sin reseñas (data-model.md · puntaje del organizador)
-- [ ] T032 [P] [US1] Test de integración `backend/test/integration/eventos.crear.test.js`: escenarios 1–5 de la story 1, `GET /categorias`, `GET /eventos/mios` y detalle del evento creado, un `eventoId` que no es UUID → 400, todo contra el contrato
+- [X] T030 [P] [US1] Test unitario `backend/test/unit/evento.domain.test.js`: `precioDesde`, `cupoDisponible`, `hayCupoPara`, `compraAbierta` y `avisoNoCancelable` con límites exactos (30 min antes → aviso; evento empezado → cerrado)
+- [X] T031 [P] [US1] Test unitario `backend/test/unit/puntaje.test.js`: promedio de reseñas redondeado a 1 decimal (5 y 3 → 4) y `null` sin reseñas (data-model.md · puntaje del organizador)
+- [X] T032 [P] [US1] Test de integración `backend/test/integration/eventos.crear.test.js`: escenarios 1–5 de la story 1, `GET /categorias`, `GET /eventos/mios` y detalle del evento creado, un `eventoId` que no es UUID → 400, todo contra el contrato
 
 ### Implementación backend
 
-- [ ] T033 [P] [US1] Crear `backend/src/schemas/evento.schema.js` (Zod para `NuevoEvento`): data-model.md · `Evento.nombre`, `Evento.descripcion`, `Evento.categoriaId`, `Evento.fecha`, `Evento.multimedia`, `Evento.tiposEntrada`, `TipoEntrada.nombre`, `TipoEntrada.descripcion`, `TipoEntrada.precio` y `TipoEntrada.cupo`
-- [ ] T034 [P] [US1] Crear `backend/src/domain/evento.js` y `backend/src/domain/puntaje.js` (reglas de T030 y T031; incluye data-model.md · `Evento.organizadorId` como organizador con rol ORGANIZADOR)
-- [ ] T035 [US1] Crear `backend/src/repository/eventos.repository.js` (guardar, `porId`, `listarPorOrganizador`) y `backend/src/services/eventos.service.js` (`crear`, `misEventos`, `detalle` con organizador y puntaje) y `backend/src/services/categorias.service.js`
-- [ ] T036 [US1] Crear controllers y rutas: `backend/src/controllers/eventos.controller.js`, `backend/src/routes/eventos.routes.js` (`POST /eventos`, `GET /eventos/mios`, `GET /eventos/:eventoId`) y `backend/src/routes/categorias.routes.js` (`GET /categorias`), con `requerirRol('ORGANIZADOR')` donde corresponda, hasta pasar T030–T032
+- [X] T033 [P] [US1] Crear `backend/src/schemas/evento.schema.js` (Zod para `NuevoEvento`): data-model.md · `Evento.nombre`, `Evento.descripcion`, `Evento.categoriaId`, `Evento.fecha`, `Evento.multimedia`, `Evento.tiposEntrada`, `TipoEntrada.nombre`, `TipoEntrada.descripcion`, `TipoEntrada.precio` y `TipoEntrada.cupo`
+- [X] T034 [P] [US1] Crear `backend/src/domain/evento.js` y `backend/src/domain/puntaje.js` (reglas de T030 y T031; incluye data-model.md · `Evento.organizadorId` como organizador con rol ORGANIZADOR)
+- [X] T035 [US1] Crear `backend/src/repository/eventos.repository.js` (guardar, `porId`, `listarPorOrganizador`) y `backend/src/services/eventos.service.js` (`crear`, `misEventos`, `detalle` con organizador y puntaje) y `backend/src/services/categorias.service.js`
+- [X] T036 [US1] Crear controllers y rutas: `backend/src/controllers/eventos.controller.js`, `backend/src/routes/eventos.routes.js` (`POST /eventos`, `GET /eventos/mios`, `GET /eventos/:eventoId`) y `backend/src/routes/categorias.routes.js` (`GET /categorias`), con `requerirRol('ORGANIZADOR')` donde corresponda, hasta pasar T030–T032
 
 ### Mobile
 
-- [ ] T037 [P] [US1] Test `mobile/__tests__/organizador/nuevoEvento.test.js`: formulario con tipos de entrada dinámicos (agregar y quitar), muestra el mensaje del backend ante un rechazo y navega al detalle al crear
-- [ ] T038 [US1] Crear `mobile/src/api/eventos.js` (con esquemas Zod de respuesta), `mobile/src/hooks/useCategorias.js` y `mobile/src/hooks/useMisEventos.js`
-- [ ] T039 [US1] Crear `mobile/src/app/(organizador)/mis-eventos.js` (lista con estado vacío) (y su tab en `(organizador)/_layout.js`) y `mobile/src/app/evento/nuevo.js` (formulario con selector de categoría, selector de fecha y hora, lista de URLs de multimedia y tipos de entrada dinámicos), hasta pasar T037
+- [X] T037 [P] [US1] Test `mobile/__tests__/organizador/nuevoEvento.test.js`: formulario con tipos de entrada dinámicos (agregar y quitar), muestra el mensaje del backend ante un rechazo y navega al detalle al crear
+- [X] T038 [US1] Crear `mobile/src/api/eventos.js` (con esquemas Zod de respuesta), `mobile/src/hooks/useCategorias.js` y `mobile/src/hooks/useMisEventos.js`
+- [X] T039 [US1] Crear `mobile/src/app/(organizador)/mis-eventos.js` (lista con estado vacío) (y su tab en `(organizador)/_layout.js`) y `mobile/src/app/evento/nuevo.js` (formulario con selector de categoría, selector de fecha y hora, lista de URLs de multimedia y tipos de entrada dinámicos), hasta pasar T037
 
 **Checkpoint**: US1 funcional y probada de forma independiente. Commit de hito.
 
