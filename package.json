@@ -1,0 +1,26 @@
+{
+  "name": "ai-ticket-it",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Ticket It — plataforma de venta de entradas para eventos (TP individual DDS UTN.BA 2C 2026)",
+  "type": "module",
+  "scripts": {
+    "dev:backend": "npm run dev --prefix backend",
+    "start:backend": "npm start --prefix backend",
+    "start:mobile": "npm start --prefix mobile",
+    "dev": "concurrently -n backend,mobile -c green,cyan \"npm run dev:backend\" \"npm run start:mobile\"",
+    "test": "npm test --prefix backend && npm test --prefix mobile",
+    "test:e2e": "npm run test:e2e --prefix backend",
+    "lint": "eslint backend && npm run lint --prefix mobile",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^10.0.7",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1"
+  }
+}

@@ -1,0 +1,13 @@
+node_modules/
+coverage/
+dist/
+build/
+.expo/
+package-lock.json
+.specify/
+.claude/
+.local/
+specs/
+docs/
+mobile/android/
+mobile/ios/
