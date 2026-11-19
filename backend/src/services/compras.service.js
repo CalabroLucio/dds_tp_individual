@@ -4,6 +4,7 @@ import {
   crearCompra,
   dentroDelPlazoDeCancelacion,
   esFinal,
+  habilitadaParaUtilizar,
   estaVencida,
   QUIEN_SISTEMA,
   quienDe,
@@ -118,6 +119,25 @@ export function crearComprasService({ repos, reloj, reglas, presentacion }) {
       }
       const destino = compra.estado === 'PENDIENTE' ? 'CANCELADA' : 'REEMBOLSADA';
       transicionar(compra, destino, quienDe(usuario), ahora);
+      return presentacion.compra(compra, usuario);
+    },
+
+    // FR-022: solo el organizador del evento, sobre una CONFIRMADA, desde 30 minutos antes del evento.
+    marcarUtilizada(usuario, compraId) {
+      const ahora = reloj.ahora();
+      const compra = obtener(compraId);
+      const evento = repos.eventos.porId(compra.eventoId);
+      if (evento.organizadorId !== usuario.id) {
+        throw errores.noAutorizado('Solo el organizador del evento puede marcar entradas como utilizadas');
+      }
+      if (compra.estado !== 'CONFIRMADA') {
+        throw errores.estadoInvalido(
+          `La compra está ${rotuloEstado(compra.estado)}: solo una compra confirmada se puede marcar como utilizada`,
+        );
+      }
+      if (!habilitadaParaUtilizar(evento, ahora, reglas))
+        throw errores.aunNoHabilitada(reglas.LIMITE_CANCELACION_MIN);
+      transicionar(compra, 'UTILIZADA', quienDe(usuario), ahora);
       return presentacion.compra(compra, usuario);
     },
 

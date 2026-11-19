@@ -225,14 +225,14 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 ### Tests (escribir primero; deben fallar)
 
-- [ ] T071 [P] [US6] Test unitario `backend/test/unit/utilizacion.test.js` y ampliación de `backend/test/unit/ciclo.expiracion.test.js`: habilitación a los 30 min exactos antes, rechazo antes y en estados distintos de CONFIRMADA, y auto-UTILIZADA a las 24 h exactas del inicio sin afectar PENDIENTES
-- [ ] T072 [P] [US6] Test de integración `backend/test/integration/compras.uso.test.js`: escenarios 1–4 y 6 de la story 6, evento de otro organizador → 403, y el cambio automático registrado como sistema
-- [ ] T073 [P] [US6] Test `mobile/__tests__/organizador/marcarUtilizada.test.js`: el botón aparece solo con `acciones.puedeMarcarUtilizada` y refresca el estado
+- [X] T071 [P] [US6] Test unitario `backend/test/unit/utilizacion.test.js` y ampliación de `backend/test/unit/ciclo.expiracion.test.js`: habilitación a los 30 min exactos antes, rechazo antes y en estados distintos de CONFIRMADA, y auto-UTILIZADA a las 24 h exactas del inicio sin afectar PENDIENTES
+- [X] T072 [P] [US6] Test de integración `backend/test/integration/compras.uso.test.js`: escenarios 1–4 y 6 de la story 6, evento de otro organizador → 403, y el cambio automático registrado como sistema
+- [X] T073 [P] [US6] Test `mobile/__tests__/organizador/marcarUtilizada.test.js`: el botón aparece solo con `acciones.puedeMarcarUtilizada` y refresca el estado
 
 ### Implementación
 
-- [ ] T074 [US6] Extender `backend/src/domain/compra.js` (`puedeMarcarUtilizada`, `autoUtilizable`), `backend/src/services/compras.service.js` (`marcarUtilizada`), la ruta `POST /compras/:compraId/uso` y `backend/src/jobs/ciclo.job.js` (paso de auto-UTILIZADA), hasta pasar T071 y T072
-- [ ] T075 [US6] Agregar la acción del organizador a `mobile/src/app/compra/[id].js` (detalle visible también para el organizador del evento), hasta pasar T073; en el celular se llega desde la pantalla de T080 (US7)
+- [X] T074 [US6] Extender `backend/src/domain/compra.js` (`puedeMarcarUtilizada`, `autoUtilizable`), `backend/src/services/compras.service.js` (`marcarUtilizada`), la ruta `POST /compras/:compraId/uso` y `backend/src/jobs/ciclo.job.js` (paso de auto-UTILIZADA), hasta pasar T071 y T072
+- [X] T075 [US6] Agregar la acción del organizador a `mobile/src/app/compra/[id].js` (detalle visible también para el organizador del evento), hasta pasar T073; en el celular se llega desde la pantalla de T080 (US7)
 
 **Checkpoint**: US6 funcional. Commit de hito.
 

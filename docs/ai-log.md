@@ -113,6 +113,13 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - Se automatizó la verificación (formato, lint, tests, bundle) en un script para repetirla igual en cada historia.
 - Tests: backend 133, mobile 49.
 
+### Historia 6 — utilizada, a mano o automática
+- Manual: solo el organizador del evento, sobre una CONFIRMADA, desde 30 minutos antes (con 30 exactos ya se puede: no se superpone con la cancelación). Automática: el job pasa a UTILIZADA las CONFIRMADAS 24 h después del inicio, registradas como sistema.
+- El job ahora devuelve `{ expiradas, utilizadas }` y el servidor lo loguea cuando hay cambios.
+- Mobile: el organizador ve el nombre del comprador y el botón "Marcar como utilizada" solo si el backend lo habilita.
+- Pendiente menor: Jest de mobile avisa que un worker "no terminó limpio" (temporizadores vivos, probablemente animaciones de Paper). No afecta resultados; `--detectOpenHandles` se cuelga y no dio información. Se agregó limpieza de los clientes de TanStack Query después de cada test.
+- Tests: backend 142, mobile 51.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

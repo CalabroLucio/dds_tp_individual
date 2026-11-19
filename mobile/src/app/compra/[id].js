@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Card, RadioButton, Text } from 'react-native-paper';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useCompra, useMediosPago, usePagar } from '../../hooks/useCompras';
+import { useCompra, useMarcarUtilizada, useMediosPago, usePagar } from '../../hooks/useCompras';
+import { useSession } from '../../session/SessionProvider';
 import { Cargando } from '../../components/Cargando';
 import { MensajeError } from '../../components/MensajeError';
 import { ChipEstado } from '../../components/ChipEstado';
@@ -17,6 +18,7 @@ import { formatearFecha, formatearPrecio, textoSeguimiento } from '../../utils/f
 export default function PantallaCompra() {
   const { id } = useLocalSearchParams();
   const compra = useCompra(id);
+  const { usuario } = useSession();
 
   if (compra.isPending) return <Cargando />;
   if (compra.isError) return <MensajeError error={compra.error} onReintentar={compra.refetch} />;
@@ -28,6 +30,11 @@ export default function PantallaCompra() {
       <Card mode="elevated">
         <Card.Content style={estilos.resumen}>
           <ChipEstado estado={c.estado} />
+          {usuario?.rol === 'ORGANIZADOR' ? (
+            <Text variant="titleMedium" accessibilityLabel="Comprador">
+              {`${c.comprador.nombre} ${c.comprador.apellido}`}
+            </Text>
+          ) : null}
           <Text variant="titleLarge" style={estilos.titulo}>
             {c.evento.nombre}
           </Text>
@@ -46,8 +53,27 @@ export default function PantallaCompra() {
 
       {c.acciones.puedePagar ? <SeccionPago compra={c} /> : null}
       {c.acciones.puedeCancelar ? <AccionCancelar compra={c} /> : null}
+      {c.acciones.puedeMarcarUtilizada ? <AccionUtilizar compraId={c.id} /> : null}
       <Historial historial={c.historial} />
     </ScrollView>
+  );
+}
+
+function AccionUtilizar({ compraId }) {
+  const marcar = useMarcarUtilizada(compraId);
+  return (
+    <View style={estilos.pago}>
+      <ErroresFormulario error={marcar.error} />
+      <Button
+        mode="contained"
+        icon="ticket-confirmation"
+        loading={marcar.isPending}
+        disabled={marcar.isPending}
+        onPress={() => marcar.mutate()}
+      >
+        Marcar como utilizada
+      </Button>
+    </View>
   );
 }
 

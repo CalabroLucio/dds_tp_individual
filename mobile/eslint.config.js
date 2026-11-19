@@ -8,7 +8,7 @@ module.exports = defineConfig([
     ignores: ['dist/*', '.expo/*', 'node_modules/*'],
   },
   {
-    files: ['__tests__/**/*.js', 'jest.setup.js'],
+    files: ['__tests__/**/*.js', 'jest.setup.js', 'jest.despues.js'],
     languageOptions: {
       globals: {
         jest: 'readonly',
@@ -17,6 +17,7 @@ module.exports = defineConfig([
         expect: 'readonly',
         beforeEach: 'readonly',
         afterEach: 'readonly',
+        require: 'readonly',
         test: 'readonly',
       },
     },

@@ -1,5 +1,5 @@
 import { errores } from '../errors/index.js';
-import { diasCalendario, minutosEntre, sumarMinutos } from '../utils/fechas.js';
+import { diasCalendario, minutosEntre, sumarHoras, sumarMinutos } from '../utils/fechas.js';
 
 // Máquina de estados de Compra (data-model.md §Máquina de estados; FR-014).
 const TRANSICIONES = {
@@ -71,6 +71,11 @@ export const dentroDelPlazoDeCancelacion = (evento, ahora, reglas) =>
 // Desde LIMITE_CANCELACION_MIN minutos antes del evento se habilita marcar como UTILIZADA (FR-022).
 export const habilitadaParaUtilizar = (evento, ahora, reglas) =>
   minutosEntre(ahora, evento.fecha) <= reglas.LIMITE_CANCELACION_MIN;
+
+// Si nadie la marcó, una CONFIRMADA pasa sola a UTILIZADA 24 h después del inicio (clarificación 2).
+export const autoUtilizable = (compra, evento, ahora, reglas) =>
+  compra.estado === 'CONFIRMADA' &&
+  ahora.getTime() >= sumarHoras(evento.fecha, reglas.AUTO_UTILIZADA_HORAS).getTime();
 
 // Seguimiento (FR-018): días calendario hasta el evento solo en CONFIRMADA y antes de que empiece.
 export function seguimiento(compra, evento, ahora) {

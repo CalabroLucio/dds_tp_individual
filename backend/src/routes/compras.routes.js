@@ -20,6 +20,7 @@ export function crearRutasCompras({ services, middleware }) {
   );
 
   router.post('/:compraId/cancelacion', autenticar, validar({ params: compraIdParams }), controller.cancelar);
+  router.post('/:compraId/uso', autenticar, validar({ params: compraIdParams }), controller.marcarUtilizada);
 
   return router;
 }
