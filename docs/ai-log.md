@@ -126,6 +126,11 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - Mobile: pantalla con barras de disponibilidad por tipo y la lista de compras por comprador; cada una abre el detalle (donde el organizador marca como utilizada y, desde la Historia 8, chatea).
 - Cierra las historias P2. Tests: backend 146, mobile 52.
 
+### Historia 8 — chat por compra
+- Los mensajes viven en la compra (data-model.md · Compra.mensajes). Solo comprador y organizador del evento, en cualquier estado, incluso cancelada. `desde` trae solo los nuevos para el polling.
+- Mobile: polling cada 3 s con TanStack Query (`refetchInterval`), sin WebSockets (decisión del log). El intervalo es un parámetro del componente para que el test lo baje a 50 ms y no dependa de temporizadores falsos. El mensaje enviado se agrega a la caché sin esperar al siguiente ciclo.
+- Tests: backend 152, mobile 54.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { validar } from '../middleware/validar.js';
 import { compraIdParams, nuevaCompraSchema, nuevoPagoSchema } from '../schemas/compra.schema.js';
 import { crearComprasController } from '../controllers/compras.controller.js';
+import { crearMensajesController } from '../controllers/mensajes.controller.js';
+import { mensajesQuerySchema, nuevoMensajeSchema } from '../schemas/mensaje.schema.js';
 
 export function crearRutasCompras({ services, middleware }) {
   const router = Router();
@@ -20,6 +22,19 @@ export function crearRutasCompras({ services, middleware }) {
   );
 
   router.post('/:compraId/cancelacion', autenticar, validar({ params: compraIdParams }), controller.cancelar);
+  const mensajes = crearMensajesController({ mensajesService: services.mensajes });
+  router.get(
+    '/:compraId/mensajes',
+    autenticar,
+    validar({ params: compraIdParams, query: mensajesQuerySchema }),
+    mensajes.listar,
+  );
+  router.post(
+    '/:compraId/mensajes',
+    autenticar,
+    validar({ params: compraIdParams, body: nuevoMensajeSchema }),
+    mensajes.enviar,
+  );
   router.post('/:compraId/uso', autenticar, validar({ params: compraIdParams }), controller.marcarUtilizada);
 
   return router;

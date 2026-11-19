@@ -267,14 +267,14 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 ### Tests (escribir primero; deben fallar)
 
-- [ ] T081 [P] [US8] Test de integración `backend/test/integration/mensajes.test.js`: envío por ambos participantes en cualquier estado de la compra, orden cronológico, filtro `desde`, mensaje vacío o solo espacios → 400, más de 500 caracteres → 400, usuario ajeno → 403 en lectura y escritura, contra el contrato
-- [ ] T082 [P] [US8] Test `mobile/__tests__/chat.test.js`: consulta periódica cada 3 s con temporizadores falsos, envío, mensaje vacío rechazado y los propios a la derecha
+- [X] T081 [P] [US8] Test de integración `backend/test/integration/mensajes.test.js`: envío por ambos participantes en cualquier estado de la compra, orden cronológico, filtro `desde`, mensaje vacío o solo espacios → 400, más de 500 caracteres → 400, usuario ajeno → 403 en lectura y escritura, contra el contrato
+- [X] T082 [P] [US8] Test `mobile/__tests__/chat.test.js`: consulta periódica cada 3 s con temporizadores falsos, envío, mensaje vacío rechazado y los propios a la derecha
 
 ### Implementación
 
-- [ ] T083 [P] [US8] Crear `backend/src/schemas/mensaje.schema.js` (Zod para `NuevoMensaje`; data-model.md · `Mensaje.texto` y `Mensaje.autorId`)
-- [ ] T084 [US8] Crear `backend/src/services/mensajes.service.js`, `backend/src/controllers/mensajes.controller.js` y las rutas `GET` y `POST /compras/:compraId/mensajes` en `backend/src/routes/compras.routes.js`, hasta pasar T081
-- [ ] T085 [US8] Crear `mobile/src/hooks/useMensajes.js` (`refetchInterval` de 3 s solo con la pantalla enfocada) y `mobile/src/components/Chat.js`, e integrarlo en `mobile/src/app/compra/[id].js` para ambos roles, hasta pasar T082
+- [X] T083 [P] [US8] Crear `backend/src/schemas/mensaje.schema.js` (Zod para `NuevoMensaje`; data-model.md · `Mensaje.texto` y `Mensaje.autorId`)
+- [X] T084 [US8] Crear `backend/src/services/mensajes.service.js`, `backend/src/controllers/mensajes.controller.js` y las rutas `GET` y `POST /compras/:compraId/mensajes` en `backend/src/routes/compras.routes.js`, hasta pasar T081
+- [X] T085 [US8] Crear `mobile/src/hooks/useMensajes.js` (`refetchInterval` de 3 s solo con la pantalla enfocada) y `mobile/src/components/Chat.js`, e integrarlo en `mobile/src/app/compra/[id].js` para ambos roles, hasta pasar T082
 
 **Checkpoint**: US8 funcional. Commit de hito.
 

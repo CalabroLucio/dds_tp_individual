@@ -11,6 +11,7 @@ import { CuentaRegresiva } from '../../components/CuentaRegresiva';
 import { ErroresFormulario } from '../../components/ErroresFormulario';
 import { AccionCancelar } from '../../components/AccionCancelar';
 import { Historial } from '../../components/Historial';
+import { Chat } from '../../components/Chat';
 import { formatearFecha, formatearPrecio, textoSeguimiento } from '../../utils/formato';
 
 // Detalle de una compra. Cada historia agrega su sección (pago, cancelación, historial, chat, reseña) y cada
@@ -55,6 +56,7 @@ export default function PantallaCompra() {
       {c.acciones.puedeCancelar ? <AccionCancelar compra={c} /> : null}
       {c.acciones.puedeMarcarUtilizada ? <AccionUtilizar compraId={c.id} /> : null}
       <Historial historial={c.historial} />
+      <Chat compraId={c.id} />
     </ScrollView>
   );
 }

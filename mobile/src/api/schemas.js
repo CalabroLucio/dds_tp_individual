@@ -114,3 +114,10 @@ export const compraDetalleSchema = compraSchema.extend({
   ),
   resenia: reseniaSchema.nullable(),
 });
+
+export const mensajeSchema = z.object({
+  id: z.string(),
+  autor: personaSchema.extend({ rol: rolSchema }),
+  texto: z.string(),
+  enviadoEn: z.string(),
+});
