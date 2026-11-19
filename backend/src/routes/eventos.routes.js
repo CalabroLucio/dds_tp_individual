@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { validar } from '../middleware/validar.js';
 import { eventoIdParams, nuevoEventoSchema } from '../schemas/evento.schema.js';
+import { busquedaSchema } from '../schemas/busqueda.schema.js';
 import { crearEventosController } from '../controllers/eventos.controller.js';
 
 export function crearRutasEventos({ services, middleware }) {
@@ -9,6 +10,7 @@ export function crearRutasEventos({ services, middleware }) {
   const { autenticar, requerirRol } = middleware;
   const soloOrganizador = [autenticar, requerirRol('ORGANIZADOR')];
 
+  router.get('/', autenticar, validar({ query: busquedaSchema }), controller.listar);
   router.post('/', soloOrganizador, validar({ body: nuevoEventoSchema }), controller.crear);
   // '/mios' va antes de '/:eventoId' para que no se interprete como un id.
   router.get('/mios', soloOrganizador, controller.misEventos);

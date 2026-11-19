@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { eventosApi } from '../api/eventos';
 
 export const claves = {
@@ -10,6 +10,13 @@ export const claves = {
 
 export const useCategorias = () =>
   useQuery({ queryKey: claves.categorias, queryFn: eventosApi.categorias, staleTime: Infinity });
+
+export const useBuscarEventos = (criterios) =>
+  useQuery({
+    queryKey: ['eventos', 'busqueda', criterios],
+    queryFn: () => eventosApi.buscar(criterios),
+    placeholderData: keepPreviousData,
+  });
 
 export const useMisEventos = () => useQuery({ queryKey: claves.misEventos, queryFn: eventosApi.misEventos });
 

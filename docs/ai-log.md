@@ -84,6 +84,13 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - El linter de React (`set-state-in-effect`) obligó a cambiar un efecto por un valor derivado: buena práctica que la IA no había aplicado de primera.
 - Tests: backend 49, mobile 28.
 
+### Historia 2 — buscar, filtrar y ordenar
+- `buscarEventos` es una función pura del dominio (recibe eventos, cómo resolver categoría y puntaje, y `ahora`), probada sin HTTP. Los organizadores sin reseñas quedan al final en cualquier dirección de orden.
+- SC-005 medido en un test: búsqueda sobre seed + 50 eventos ordenada por puntaje, muy por debajo de 1 s.
+- Mobile: los filtros se mandan al backend tal cual (con espera de 350 ms para no buscar por tecla); el front no filtra ni ordena. Query string armado a mano porque `URLSearchParams` tiene soporte parcial en React Native.
+- `ListaResenias` se creó ya en esta historia porque el detalle del evento debe mostrar las reseñas (caso de uso 10); la Historia 9 la reutiliza.
+- Tests: backend 67, mobile 35.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

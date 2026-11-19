@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { validarFechaFutura } from '../domain/evento.js';
+import { buscarEventos } from '../domain/busqueda.js';
 import { errores } from '../errors/index.js';
 
 export function crearEventosService({ repos, reloj, presentacion }) {
@@ -42,6 +43,21 @@ export function crearEventosService({ repos, reloj, presentacion }) {
         .listarPorOrganizador(organizador.id)
         .sort((a, b) => b.fecha - a.fecha)
         .map((e) => presentacion.eventoResumen(e, organizador));
+    },
+
+    listar(criterios, usuario) {
+      const puntajes = new Map();
+      const puntajeDe = (organizadorId) => {
+        if (!puntajes.has(organizadorId)) {
+          puntajes.set(organizadorId, presentacion.organizadorResumen(organizadorId).puntaje);
+        }
+        return puntajes.get(organizadorId);
+      };
+      return buscarEventos(repos.eventos.listar(), criterios, {
+        ahora: reloj.ahora(),
+        categoriaPorId: repos.categorias.porId,
+        puntajeDe,
+      }).map((e) => presentacion.eventoResumen(e, usuario));
     },
 
     detalle(eventoId, usuario) {

@@ -124,19 +124,19 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 ### Tests (escribir primero; deben fallar)
 
-- [ ] T040 [P] [US2] Test unitario `backend/test/unit/busqueda.test.js`: texto con tildes y mayúsculas sobre nombre, descripción y categoría; categoría; rango de precio (al menos un tipo dentro); orden por precio (mínimo del evento), fecha (más próximo primero) y puntaje (sin reseñas al final); excluye eventos pasados
-- [ ] T041 [P] [US2] Test de integración `backend/test/integration/eventos.buscar.test.js`: `GET /eventos` con cada combinación de parámetros, lista vacía, parámetros inválidos → 400 (incluido `precioMin` > `precioMax`), el detalle con `organizador.resenias` y `esFavorito` (en esta historia solo se verifica que exista y valga `false`; el `true` lo cubre US10), y que la búsqueda sobre el seed base más 50 eventos responda en menos de 1 s (SC-005), contra el contrato
+- [X] T040 [P] [US2] Test unitario `backend/test/unit/busqueda.test.js`: texto con tildes y mayúsculas sobre nombre, descripción y categoría; categoría; rango de precio (al menos un tipo dentro); orden por precio (mínimo del evento), fecha (más próximo primero) y puntaje (sin reseñas al final); excluye eventos pasados
+- [X] T041 [P] [US2] Test de integración `backend/test/integration/eventos.buscar.test.js`: `GET /eventos` con cada combinación de parámetros, lista vacía, parámetros inválidos → 400 (incluido `precioMin` > `precioMax`), el detalle con `organizador.resenias` y `esFavorito` (en esta historia solo se verifica que exista y valga `false`; el `true` lo cubre US10), y que la búsqueda sobre el seed base más 50 eventos responda en menos de 1 s (SC-005), contra el contrato
 
 ### Implementación backend
 
-- [ ] T042 [P] [US2] Crear `backend/src/domain/busqueda.js` (filtros y ordenamientos puros; usa `utils/texto.js`) y `backend/src/schemas/busqueda.schema.js` (query: `q`, `categoriaId`, `precioMin`, `precioMax`, `orden`, `direccion`)
-- [ ] T043 [US2] Extender `backend/src/services/eventos.service.js` con `listar` (resumen con `precioDesde`, organizador y puntaje) y agregar `GET /eventos` en `backend/src/routes/eventos.routes.js` y el controller, hasta pasar T040 y T041
+- [X] T042 [P] [US2] Crear `backend/src/domain/busqueda.js` (filtros y ordenamientos puros; usa `utils/texto.js`) y `backend/src/schemas/busqueda.schema.js` (query: `q`, `categoriaId`, `precioMin`, `precioMax`, `orden`, `direccion`)
+- [X] T043 [US2] Extender `backend/src/services/eventos.service.js` con `listar` (resumen con `precioDesde`, organizador y puntaje) y agregar `GET /eventos` en `backend/src/routes/eventos.routes.js` y el controller, hasta pasar T040 y T041
 
 ### Mobile
 
-- [ ] T044 [P] [US2] Tests `mobile/__tests__/comprador/explorar.test.js` (buscador, chips de categoría, selector de orden, filtro de precio, estado vacío) y `mobile/__tests__/comprador/detalleEvento.test.js` (tipos de entrada con cupo y "agotado", puntaje del organizador y lista de reseñas)
-- [ ] T045 [US2] Crear `mobile/src/hooks/useEventos.js` (con *debounce* del texto), `mobile/src/components/TarjetaEvento.js` y `mobile/src/app/(comprador)/explorar.js` (y su tab en `(comprador)/_layout.js`)
-- [ ] T046 [US2] Crear `mobile/src/app/evento/[id].js` (detalle: descripción, multimedia con `expo-image`, tipos de entrada, puntaje y reseñas del organizador), hasta pasar T044
+- [X] T044 [P] [US2] Tests `mobile/__tests__/comprador/explorar.test.js` (buscador, chips de categoría, selector de orden, filtro de precio, estado vacío) y `mobile/__tests__/comprador/detalleEvento.test.js` (tipos de entrada con cupo y "agotado", puntaje del organizador y lista de reseñas)
+- [X] T045 [US2] Crear `mobile/src/hooks/useEventos.js` (con *debounce* del texto), `mobile/src/components/TarjetaEvento.js` y `mobile/src/app/(comprador)/explorar.js` (y su tab en `(comprador)/_layout.js`)
+- [X] T046 [US2] Crear `mobile/src/app/evento/[id].js` (detalle: descripción, multimedia con `expo-image`, tipos de entrada, puntaje y reseñas del organizador), hasta pasar T044
 
 **Checkpoint**: US1 + US2 funcionan: un organizador publica y un comprador encuentra. Commit de hito.
 

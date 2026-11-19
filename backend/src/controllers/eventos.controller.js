@@ -3,6 +3,9 @@ export function crearEventosController({ eventosService }) {
     crear: (req, res) => {
       res.status(201).json(eventosService.crear(req.usuario, req.datos.body));
     },
+    listar: (req, res) => {
+      res.json(eventosService.listar(req.datos.query, req.usuario));
+    },
     misEventos: (req, res) => {
       res.json(eventosService.misEventos(req.usuario));
     },
