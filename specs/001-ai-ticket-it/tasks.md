@@ -182,15 +182,15 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 ### Tests (escribir primero; deben fallar)
 
-- [ ] T060 [P] [US4] Test unitario `backend/test/unit/compra.seguimiento.test.js`: `diasParaEvento` (solo CONFIRMADA con evento futuro; 0 = hoy; 20) y `eventoRealizado`
-- [ ] T061 [P] [US4] Test de integración `backend/test/integration/compras.listar.test.js`: `GET /compras` solo propias y más recientes primero, `GET /compras/:id` con historial, compra ajena → 403, organizador en `GET /compras` → 403, un `compraId` que no es UUID → 400, contra el contrato
-- [ ] T062 [P] [US4] Test `mobile/__tests__/comprador/misCompras.test.js`: estado diferenciado, días restantes solo en CONFIRMADAS, "hoy", "Evento realizado" y estado vacío
+- [X] T060 [P] [US4] Test unitario `backend/test/unit/compra.seguimiento.test.js`: `diasParaEvento` (solo CONFIRMADA con evento futuro; 0 = hoy; 20) y `eventoRealizado`
+- [X] T061 [P] [US4] Test de integración `backend/test/integration/compras.listar.test.js`: `GET /compras` solo propias y más recientes primero, `GET /compras/:id` con historial, compra ajena → 403, organizador en `GET /compras` → 403, un `compraId` que no es UUID → 400, contra el contrato
+- [X] T062 [P] [US4] Test `mobile/__tests__/comprador/misCompras.test.js`: estado diferenciado, días restantes solo en CONFIRMADAS, "hoy", "Evento realizado" y estado vacío
 
 ### Implementación
 
-- [ ] T063 [US4] Extender `backend/src/domain/compra.js` (`diasParaEvento`, `eventoRealizado`) y `backend/src/services/compras.service.js` (`listarMias`, `detalle` con verificación de participante) y las rutas `GET /compras` y `GET /compras/:compraId`, hasta pasar T060 y T061
-- [ ] T064 [US4] Crear `mobile/src/components/TarjetaCompra.js` y `mobile/src/app/(comprador)/mis-compras.js` (y su tab), y mostrar estado y días en `mobile/src/app/compra/[id].js`, hasta pasar T062
-- [ ] T065 [US4] Test E2E `backend/test/e2e/p1.comprar-pagar.e2e.test.js` con el servidor real: organizador crea evento → comprador busca → compra → pago rechazado → pago aprobado → "Mis compras" muestra CONFIRMADA con días restantes
+- [X] T063 [US4] Extender `backend/src/domain/compra.js` (`diasParaEvento`, `eventoRealizado`) y `backend/src/services/compras.service.js` (`listarMias`, `detalle` con verificación de participante) y las rutas `GET /compras` y `GET /compras/:compraId`, hasta pasar T060 y T061
+- [X] T064 [US4] Crear `mobile/src/components/TarjetaCompra.js` y `mobile/src/app/(comprador)/mis-compras.js` (y su tab), y mostrar estado y días en `mobile/src/app/compra/[id].js`, hasta pasar T062
+- [X] T065 [US4] Test E2E `backend/test/e2e/p1.comprar-pagar.e2e.test.js` con el servidor real: organizador crea evento → comprador busca → compra → pago rechazado → pago aprobado → "Mis compras" muestra CONFIRMADA con días restantes
 
 **Checkpoint (MVP)**: las 4 historias P1 completas = el flujo comprar → pagar demostrable. Commit de hito.
 

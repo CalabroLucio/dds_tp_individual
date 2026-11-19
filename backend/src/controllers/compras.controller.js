@@ -3,6 +3,12 @@ export function crearComprasController({ comprasService }) {
     crear: (req, res) => {
       res.status(201).json(comprasService.crearCompra(req.usuario, req.datos.body));
     },
+    listarMias: (req, res) => {
+      res.json(comprasService.listarMias(req.usuario));
+    },
+    detalle: (req, res) => {
+      res.json(comprasService.detalle(req.usuario, req.datos.params.compraId));
+    },
     pagar: (req, res) => {
       res.json(comprasService.pagar(req.usuario, req.datos.params.compraId, req.datos.body.medioPago));
     },

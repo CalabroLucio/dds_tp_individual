@@ -8,7 +8,7 @@ import { MensajeError } from '../../components/MensajeError';
 import { ChipEstado } from '../../components/ChipEstado';
 import { CuentaRegresiva } from '../../components/CuentaRegresiva';
 import { ErroresFormulario } from '../../components/ErroresFormulario';
-import { formatearFecha, formatearPrecio } from '../../utils/formato';
+import { formatearFecha, formatearPrecio, textoSeguimiento } from '../../utils/formato';
 
 // Detalle de una compra. Cada historia agrega su sección (pago, cancelación, historial, chat, reseña) y cada
 // acción aparece solo si el backend la habilita en `acciones`.
@@ -34,6 +34,11 @@ export default function PantallaCompra() {
             {`${c.cantidad} × ${c.tipoEntrada.nombre} · ${formatearPrecio(c.tipoEntrada.precio)}`}
           </Text>
           <Text variant="titleMedium">Total {formatearPrecio(c.total)}</Text>
+          {textoSeguimiento(c) ? (
+            <Text variant="titleSmall" style={estilos.seguimiento}>
+              {textoSeguimiento(c)}
+            </Text>
+          ) : null}
         </Card.Content>
       </Card>
 
@@ -88,6 +93,7 @@ const estilos = StyleSheet.create({
   contenido: { padding: 16, gap: 16, paddingBottom: 48 },
   resumen: { gap: 6 },
   titulo: { fontWeight: '800' },
+  seguimiento: { color: '#1E6B12' },
   pago: { gap: 8 },
   opcion: { textAlign: 'left' },
 });

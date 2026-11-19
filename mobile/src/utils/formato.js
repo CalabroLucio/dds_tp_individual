@@ -27,6 +27,14 @@ export function formatearFechaHoraCorta(iso) {
   });
 }
 
+// Seguimiento de la compra con los datos que calcula el backend (diasParaEvento, eventoRealizado).
+export function textoSeguimiento(compra) {
+  if (compra.eventoRealizado) return 'Evento realizado';
+  if (compra.diasParaEvento === null || compra.diasParaEvento === undefined) return null;
+  if (compra.diasParaEvento === 0) return '¡Es hoy!';
+  return compra.diasParaEvento === 1 ? 'Falta 1 día' : `Faltan ${compra.diasParaEvento} días`;
+}
+
 // Traduce el `campo` de un detalle de validación del backend a un texto para el usuario.
 const ROTULOS = {
   nombre: 'Nombre',

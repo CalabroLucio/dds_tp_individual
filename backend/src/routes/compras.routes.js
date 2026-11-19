@@ -6,10 +6,12 @@ import { crearComprasController } from '../controllers/compras.controller.js';
 export function crearRutasCompras({ services, middleware }) {
   const router = Router();
   const controller = crearComprasController({ comprasService: services.compras });
-  const { autenticar } = middleware;
+  const { autenticar, requerirRol } = middleware;
 
   // El rol se valida en el servicio para poder explicar el caso "organizador sobre su propio evento".
+  router.get('/', autenticar, requerirRol('COMPRADOR'), controller.listarMias);
   router.post('/', autenticar, validar({ body: nuevaCompraSchema }), controller.crear);
+  router.get('/:compraId', autenticar, validar({ params: compraIdParams }), controller.detalle);
   router.post(
     '/:compraId/pagos',
     autenticar,

@@ -3,6 +3,7 @@ import { api } from './cliente';
 import { compraDetalleSchema, compraSchema, medioPagoSchema } from './schemas';
 
 export const comprasApi = {
+  mias: () => api.get('/compras', { schema: z.array(compraSchema) }),
   mediosPago: () => api.get('/medios-pago', { schema: z.array(medioPagoSchema) }),
   crear: ({ eventoId, tipoEntradaId, cantidad }) =>
     api.post('/compras', { body: { eventoId, tipoEntradaId, cantidad }, schema: compraSchema }),

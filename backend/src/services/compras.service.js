@@ -31,9 +31,38 @@ export function crearComprasService({ repos, reloj, reglas, presentacion }) {
     return true;
   }
 
+  // Comprador de la compra u organizador del evento: los únicos que pueden verla (FR-002).
+  function obtenerComoParticipante(compraId, usuario) {
+    const compra = obtener(compraId);
+    const evento = repos.eventos.porId(compra.eventoId);
+    if (compra.compradorId !== usuario.id && evento.organizadorId !== usuario.id) {
+      throw errores.noAutorizado('Solo el comprador y el organizador del evento pueden ver esta compra');
+    }
+    return compra;
+  }
+
   return {
     obtener,
+    obtenerComoParticipante,
     cancelarSiVencio,
+
+    listarMias(usuario) {
+      const ahora = reloj.ahora();
+      return repos.compras
+        .listarPorComprador(usuario.id)
+        .map((c) => {
+          cancelarSiVencio(c, ahora);
+          return c;
+        })
+        .sort((a, b) => b.creadaEn - a.creadaEn)
+        .map((c) => presentacion.compra(c, usuario));
+    },
+
+    detalle(usuario, compraId) {
+      const compra = obtenerComoParticipante(compraId, usuario);
+      cancelarSiVencio(compra, reloj.ahora());
+      return presentacion.compraDetalle(compra, usuario);
+    },
 
     mediosPago: () => MEDIOS_PAGO.map(({ id, nombre }) => ({ id, nombre })),
 

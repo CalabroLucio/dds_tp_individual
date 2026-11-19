@@ -8,6 +8,8 @@ export const clavesCompras = {
   mediosPago: ['medios-pago'],
 };
 
+export const useMisCompras = () => useQuery({ queryKey: ['compras', 'mias'], queryFn: comprasApi.mias });
+
 export const useCompra = (id) =>
   useQuery({
     queryKey: clavesCompras.compra(id),

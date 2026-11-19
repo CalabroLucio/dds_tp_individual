@@ -100,6 +100,12 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - La pantalla de compra mobile usa `GET /compras/{id}`, que se implementa en la Historia 4 (siguiente); los tests de mobile lo simulan.
 - Tests: backend 105, mobile 43.
 
+### Historia 4 — mis compras (cierre del MVP P1)
+- `GET /compras` (solo del comprador, más recientes primero) y `GET /compras/{id}` (comprador u organizador del evento, con historial). Las PENDIENTES vencidas se muestran CANCELADAS al leerlas aunque el job todavía no haya pasado.
+- Desvío honesto de test-first: los tests unitarios de `seguimiento` (días para el evento) pasaron desde el primer momento porque esa lógica se adelantó en la Historia 3, cuando el contrato la exigía. Los de integración y mobile sí fallaron primero.
+- E2E P1 con servidor real (fetch): publicar → buscar → comprar → pago rechazado → pago aprobado → cupo descontado → "Mis compras". Verde.
+- **MVP completo**: las cuatro historias P1 funcionan de punta a punta. Tests: backend 118 + 1 E2E, mobile 46.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.
