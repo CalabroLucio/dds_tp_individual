@@ -62,7 +62,7 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - [x] `/speckit-specify` (10 user stories P1/P2/P3) y `/speckit-clarify` (4 decisiones).
 - [x] `/speckit-plan`: research, data-model, contracts/openapi.yaml y quickstart.
 - [x] `/speckit-tasks`: 105 tareas en 13 fases (tests primero).
-- [ ] `/speckit-analyze`.
+- [x] `/speckit-analyze`: 12 hallazgos (2 críticos de constitution, 1 alto, 3 medios, 6 bajos), todos corregidos en spec, data-model y tasks.
 - [ ] `/speckit-implement` con Opus.
 - [ ] Skills propias, `CLAUDE.md` raíz, `codegraph init -i` tras el scaffold.
 
@@ -70,3 +70,6 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.
 - El comando `claude mcp show` sugerido no existe (es `get`): contrastar siempre con la documentación.
+- `/speckit-analyze` encontró contradicciones que la IA introdujo al escribir los propios artefactos: el tope de 10 entradas figuraba como 400 en el modelo y como 409 en el contrato, y la constitution exigía validar params y registrar el log "en el momento", pero las tareas no lo reflejaban. Lección: un paso de verificación cruzada automática detecta inconsistencias que una sola pasada de generación no ve.
+- Error de la IA: commiteó con `git add -A` un APK de 200 MB que estaba en la raíz del repo. Se detectó antes del push, se reescribió el commit local y se agregó `*.apk` al `.gitignore`. Lección: revisar qué entra en cada commit en vez de agregar todo a ciegas.
+- Decisión de ritmo del autor: desarrollar primero backend y tests, y dejar la configuración del celular (Expo Go, red mirrored) para antes de las pantallas mobile.

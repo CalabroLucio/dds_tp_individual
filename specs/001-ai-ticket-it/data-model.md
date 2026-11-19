@@ -59,7 +59,7 @@ Derivado: `cupoDisponible = cupo − Σ cantidad(compras PENDIENTE, CONFIRMADA o
 | id | uuid | |
 | compradorId | uuid | rol COMPRADOR |
 | eventoId, tipoEntradaId | uuid | el tipo pertenece al evento |
-| cantidad | integer | 1 ≤ n ≤ min(10, cupoDisponible) (FR-011) |
+| cantidad | integer | 1 ≤ n ≤ min(10, cupoDisponible) (FR-011). Entero ≥ 1 se valida en el borde (400); el máximo y el cupo en el servicio (409) |
 | total | number | `precio × cantidad`, fijado al crear |
 | estado | EstadoCompra | ver transiciones |
 | creadaEn | Date | |
@@ -72,7 +72,7 @@ Derivado: `cupoDisponible = cupo − Σ cantidad(compras PENDIENTE, CONFIRMADA o
 | Campo | Tipo | Reglas |
 |---|---|---|
 | estado | EstadoCompra | estado al que pasó |
-| quien | `{ id, nombre, rol }` \| `SISTEMA` | comprador, organizador o sistema (job) |
+| quien | `{ tipo, id, nombre }` | `tipo` ∈ `COMPRADOR`, `ORGANIZADOR`, `SISTEMA`; `id` y `nombre` son `null` si es `SISTEMA` (igual que el contrato) |
 | fechaHora | Date | |
 
 ### Mensaje
@@ -126,7 +126,7 @@ Cada transición agrega un `CambioEstadoCompra`.
 
 | Acción | Verdadera cuando |
 |---|---|
-| puedePagar | estado PENDIENTE y `ahora < expiraEn` (solo el comprador) |
+| puedePagar | estado PENDIENTE y `ahora < expiraEn` (solo el comprador). Si se intenta pagar con `ahora ≥ expiraEn`, el servicio cancela la compra en ese momento (`quien.tipo = SISTEMA`) y responde 409 `ESTADO_INVALIDO` |
 | puedeCancelar | estado PENDIENTE o CONFIRMADA y faltan > 30 min (solo el comprador) |
 | puedeMarcarUtilizada | estado CONFIRMADA y `ahora ≥ fecha − 30 min` (solo el organizador) |
 | puedeResenar | estado UTILIZADA y sin reseña (solo el comprador) |

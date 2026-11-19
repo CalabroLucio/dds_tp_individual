@@ -62,7 +62,7 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 - [ ] T013 Escribir test de integración (debe fallar) `backend/test/integration/auth.test.js`: login correcto, credenciales inválidas (mismo mensaje para email y contraseña), cuerpo inválido 400, `GET /auth/me` con y sin token, token vencido o malformado → 401, y una ruta de prueba que verifique `requerirRol` (403); todas las respuestas contra el contrato
 - [ ] T014 [P] Crear `backend/src/repository/store.js` (colecciones `Map`, función `reiniciar`), `backend/src/repository/usuarios.repository.js` (`buscarPorEmail`, `porId`; el email único según data-model.md · `Usuario.email`) y `backend/src/repository/categorias.repository.js` (unicidad según data-model.md · `Categoria.nombre`)
 - [ ] T015 [P] Crear `backend/src/schemas/auth.schema.js` (Zod para `LoginRequest`; formato de email según data-model.md · `Usuario.email`)
-- [ ] T016 Crear los middleware `backend/src/middleware/autenticar.js` (verifica JWT, adjunta usuario), `backend/src/middleware/requerirRol.js` (data-model.md · `Usuario.rol`), `backend/src/middleware/validar.js` (Zod → `VALIDACION` con `detalles`) y `backend/src/middleware/manejarErrores.js` (forma `{ error: { codigo, mensaje, detalles } }`)
+- [ ] T016 Crear los middleware `backend/src/middleware/autenticar.js` (verifica JWT, adjunta usuario), `backend/src/middleware/requerirRol.js` (data-model.md · `Usuario.rol`), `backend/src/middleware/validar.js` (Zod sobre **body, query y params** → `VALIDACION` con `detalles`; un id de ruta que no es UUID responde 400, constitution I) y `backend/src/middleware/manejarErrores.js` (forma `{ error: { codigo, mensaje, detalles } }`)
 - [ ] T017 Implementar `backend/src/services/auth.service.js` (bcryptjs, JWT con `JWT_EXPIRACION`), `backend/src/controllers/auth.controller.js` y `backend/src/routes/auth.routes.js` (`POST /auth/login`, `GET /auth/me`) hasta pasar T013
 - [ ] T018 Crear `backend/src/app.js` (`crearApp(deps)`: cors, json, rutas, Swagger UI en `/api-docs` y `/api-docs.json` leyendo `openapi.yaml`, `GET /salud`, manejador de errores y 404 con forma de error) y `backend/src/index.js` (carga el seed base, escucha en `0.0.0.0` y el puerto configurado)
 - [ ] T019 Crear `backend/src/seed/seed.js` con `cargarSeedBase`: las 6 categorías (data-model.md · `Categoria.nombre`) y los 5 usuarios del seed (2 organizadores y 3 compradores, email único, contraseña `demo1234`, data-model.md · `Usuario.nombre`, `Usuario.apellido`, `Usuario.email`, `Usuario.rol`)
@@ -75,7 +75,7 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 - [ ] T023 [P] Escribir test (debe fallar) `mobile/__tests__/session/SessionProvider.test.js`: restaura la sesión desde `expo-secure-store` al iniciar, `login` guarda el token, `logout` lo borra
 - [ ] T024 Implementar `mobile/src/session/SessionProvider.js` hasta pasar T023
 - [ ] T025 [P] Escribir test (debe fallar) `mobile/__tests__/login.test.js`: pantalla de login con validación y mensaje de error ante credenciales inválidas; redirige según el rol
-- [ ] T026 Implementar `mobile/src/app/_layout.js` (providers de Paper, TanStack Query y sesión; `Stack.Protected guard` para `login`, `(comprador)` y `(organizador)`, R2), `mobile/src/app/login.js`, `mobile/src/app/(comprador)/_layout.js` y `mobile/src/app/(organizador)/_layout.js` (tabs), más una pantalla `perfil.js` mínima en cada grupo con cierre de sesión, hasta pasar T025
+- [ ] T026 Implementar `mobile/src/app/_layout.js` (providers de Paper, TanStack Query y sesión; `Stack.Protected guard` para `login`, `(comprador)` y `(organizador)`, R2), `mobile/src/app/login.js`, `mobile/src/app/(comprador)/_layout.js` y `mobile/src/app/(organizador)/_layout.js` (tabs que por ahora declaran solo `perfil`; cada historia agrega su tab al crear la pantalla), más una pantalla `perfil.js` mínima en cada grupo con cierre de sesión, hasta pasar T025
 - [ ] T027 [P] Crear `mobile/src/components/ChipEstado.js` (color y rótulo por `EstadoCompra`) con test `mobile/__tests__/components/ChipEstado.test.js`
 
 ### Verificación del entorno
@@ -97,7 +97,7 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 - [ ] T030 [P] [US1] Test unitario `backend/test/unit/evento.domain.test.js`: `precioDesde`, `cupoDisponible`, `hayCupoPara`, `compraAbierta` y `avisoNoCancelable` con límites exactos (30 min antes → aviso; evento empezado → cerrado)
 - [ ] T031 [P] [US1] Test unitario `backend/test/unit/puntaje.test.js`: promedio de reseñas redondeado a 1 decimal (5 y 3 → 4) y `null` sin reseñas (data-model.md · puntaje del organizador)
-- [ ] T032 [P] [US1] Test de integración `backend/test/integration/eventos.crear.test.js`: escenarios 1–5 de la story 1, `GET /categorias`, `GET /eventos/mios` y detalle del evento creado, todo contra el contrato
+- [ ] T032 [P] [US1] Test de integración `backend/test/integration/eventos.crear.test.js`: escenarios 1–5 de la story 1, `GET /categorias`, `GET /eventos/mios` y detalle del evento creado, un `eventoId` que no es UUID → 400, todo contra el contrato
 
 ### Implementación backend
 
@@ -110,7 +110,7 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 
 - [ ] T037 [P] [US1] Test `mobile/__tests__/organizador/nuevoEvento.test.js`: formulario con tipos de entrada dinámicos (agregar y quitar), muestra el mensaje del backend ante un rechazo y navega al detalle al crear
 - [ ] T038 [US1] Crear `mobile/src/api/eventos.js` (con esquemas Zod de respuesta), `mobile/src/hooks/useCategorias.js` y `mobile/src/hooks/useMisEventos.js`
-- [ ] T039 [US1] Crear `mobile/src/app/(organizador)/mis-eventos.js` (lista con estado vacío) y `mobile/src/app/evento/nuevo.js` (formulario con selector de categoría, selector de fecha y hora, lista de URLs de multimedia y tipos de entrada dinámicos), hasta pasar T037
+- [ ] T039 [US1] Crear `mobile/src/app/(organizador)/mis-eventos.js` (lista con estado vacío) (y su tab en `(organizador)/_layout.js`) y `mobile/src/app/evento/nuevo.js` (formulario con selector de categoría, selector de fecha y hora, lista de URLs de multimedia y tipos de entrada dinámicos), hasta pasar T037
 
 **Checkpoint**: US1 funcional y probada de forma independiente. Commit de hito.
 
@@ -125,7 +125,7 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 ### Tests (escribir primero; deben fallar)
 
 - [ ] T040 [P] [US2] Test unitario `backend/test/unit/busqueda.test.js`: texto con tildes y mayúsculas sobre nombre, descripción y categoría; categoría; rango de precio (al menos un tipo dentro); orden por precio (mínimo del evento), fecha (más próximo primero) y puntaje (sin reseñas al final); excluye eventos pasados
-- [ ] T041 [P] [US2] Test de integración `backend/test/integration/eventos.buscar.test.js`: `GET /eventos` con cada combinación de parámetros, lista vacía, parámetros inválidos → 400 (incluido `precioMin` > `precioMax`), y el detalle con `organizador.resenias` y `esFavorito`, contra el contrato
+- [ ] T041 [P] [US2] Test de integración `backend/test/integration/eventos.buscar.test.js`: `GET /eventos` con cada combinación de parámetros, lista vacía, parámetros inválidos → 400 (incluido `precioMin` > `precioMax`), el detalle con `organizador.resenias` y `esFavorito` (en esta historia solo se verifica que exista y valga `false`; el `true` lo cubre US10), y que la búsqueda sobre el seed base más 50 eventos responda en menos de 1 s (SC-005), contra el contrato
 
 ### Implementación backend
 
@@ -135,7 +135,7 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 ### Mobile
 
 - [ ] T044 [P] [US2] Tests `mobile/__tests__/comprador/explorar.test.js` (buscador, chips de categoría, selector de orden, filtro de precio, estado vacío) y `mobile/__tests__/comprador/detalleEvento.test.js` (tipos de entrada con cupo y "agotado", puntaje del organizador y lista de reseñas)
-- [ ] T045 [US2] Crear `mobile/src/hooks/useEventos.js` (con *debounce* del texto), `mobile/src/components/TarjetaEvento.js` y `mobile/src/app/(comprador)/explorar.js`
+- [ ] T045 [US2] Crear `mobile/src/hooks/useEventos.js` (con *debounce* del texto), `mobile/src/components/TarjetaEvento.js` y `mobile/src/app/(comprador)/explorar.js` (y su tab en `(comprador)/_layout.js`)
 - [ ] T046 [US2] Crear `mobile/src/app/evento/[id].js` (detalle: descripción, multimedia con `expo-image`, tipos de entrada, puntaje y reseñas del organizador), hasta pasar T044
 
 **Checkpoint**: US1 + US2 funcionan: un organizador publica y un comprador encuentra. Commit de hito.
@@ -153,15 +153,15 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 - [ ] T047 [P] [US3] Test unitario `backend/test/unit/compra.domain.test.js`: creación (total, `expiraEn`, estado PENDIENTE, historial inicial), matriz de transiciones permitidas y prohibidas, y `acciones.puedePagar`
 - [ ] T048 [P] [US3] Test unitario `backend/test/unit/reserva.atomica.test.js`: `crearCompraReservandoCupo` es **síncrona** (no devuelve una promesa), nunca supera el cupo, y un repositorio sustituto que cede el control entre el chequeo y el descuento hace fallar la verificación (evita el falso positivo, R9 en [research.md](research.md))
 - [ ] T049 [P] [US3] Test de integración `backend/test/integration/compras.crear.test.js`: escenarios 1, 5, 7, 8, 9, 10 y 11 de la story 3 (cantidad > cupo, > 10, organizador sobre evento propio → 403, aviso de no cancelable, evento empezado → 409) y la prueba de concurrencia de **50 solicitudes sobre cupo 10 → 10 × 201 y 40 × 409** (SC-002), contra el contrato
-- [ ] T050 [P] [US3] Test de integración `backend/test/integration/compras.pagar.test.js`: pago aprobado, `TARJETA_RECHAZADA` → 402 y sigue PENDIENTE con cupo reservado, reintento aprobado, pagar compra CONFIRMADA/CANCELADA → 409, compra ajena → 403, y `GET /medios-pago`
+- [ ] T050 [P] [US3] Test de integración `backend/test/integration/compras.pagar.test.js`: pago aprobado, `TARJETA_RECHAZADA` → 402 y sigue PENDIENTE con cupo reservado, reintento aprobado, pagar compra CONFIRMADA/CANCELADA → 409, compra ajena → 403, pagar con `ahora ≥ expiraEn` aunque el job todavía no corrió → la compra pasa a CANCELADA (registrada como sistema) y responde 409 `ESTADO_INVALIDO`, y `GET /medios-pago`
 - [ ] T051 [P] [US3] Test unitario `backend/test/unit/ciclo.expiracion.test.js`: `ejecutarCiclo(ahora)` cancela PENDIENTES con 15 min exactos, libera el cupo, registra `quien = SISTEMA` y no toca CONFIRMADAS ni PENDIENTES más recientes (SC-007)
 
 ### Implementación backend
 
-- [ ] T052 [P] [US3] Crear `backend/src/schemas/compra.schema.js` (Zod para `NuevaCompra` y `NuevoPago`; data-model.md · `Compra.cantidad`, `Compra.tipoEntradaId` y `Compra.compradorId`)
+- [ ] T052 [P] [US3] Crear `backend/src/schemas/compra.schema.js` (Zod para `NuevaCompra` y `NuevoPago`; data-model.md · `Compra.cantidad`, `Compra.tipoEntradaId` y `Compra.compradorId`). Precisión: el Zod valida solo que `cantidad` sea entera ≥ 1; el máximo por compra y el cupo los valida el servicio (T055) con 409 `CANTIDAD_EXCEDE_MAXIMO` y `CUPO_INSUFICIENTE`, como dice el contrato
 - [ ] T053 [P] [US3] Crear `backend/src/domain/compra.js` (creación con data-model.md · `Compra.total`, `Compra.estado`, `Compra.expiraEn` y `CambioEstadoCompra.estado`, `CambioEstadoCompra.quien`, `CambioEstadoCompra.fechaHora`; tabla de transiciones de [data-model.md](data-model.md) §Máquina de estados; cálculo de `acciones`) y `backend/src/domain/pagos.js` (medios simulados deterministas, R19)
 - [ ] T054 [US3] Crear `backend/src/repository/compras.repository.js` con `crearCompraReservandoCupo` (sección síncrona atómica, constitution III), cálculo de `cupoDisponible` (data-model.md · `TipoEntrada.cupo`) y liberación de cupo
-- [ ] T055 [US3] Crear `backend/src/services/compras.service.js` (`crearCompra` y `pagar`: rol, organizador no compra su evento, evento no empezado, máximo por compra, pertenencia del tipo al evento), `backend/src/controllers/compras.controller.js` y `backend/src/routes/compras.routes.js` (`POST /compras`, `POST /compras/:compraId/pagos`) y `GET /medios-pago`
+- [ ] T055 [US3] Crear `backend/src/services/compras.service.js` (`crearCompra` y `pagar`: rol, organizador no compra su evento, evento no empezado, máximo por compra, pertenencia del tipo al evento; `pagar` trata como vencida toda PENDIENTE con `ahora ≥ expiraEn`, la cancela en el momento y responde 409), `backend/src/controllers/compras.controller.js` y `backend/src/routes/compras.routes.js` (`POST /compras`, `POST /compras/:compraId/pagos`) y `GET /medios-pago`
 - [ ] T056 [US3] Crear `backend/src/jobs/ciclo.job.js` con `ejecutarCiclo(ahora)` (expiración de PENDIENTES) e `iniciarJob` (`setInterval`), y arrancarlo en `backend/src/index.js` (no en `crearApp`), hasta pasar T047–T051
 
 ### Mobile
@@ -183,13 +183,13 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 ### Tests (escribir primero; deben fallar)
 
 - [ ] T060 [P] [US4] Test unitario `backend/test/unit/compra.seguimiento.test.js`: `diasParaEvento` (solo CONFIRMADA con evento futuro; 0 = hoy; 20) y `eventoRealizado`
-- [ ] T061 [P] [US4] Test de integración `backend/test/integration/compras.listar.test.js`: `GET /compras` solo propias y más recientes primero, `GET /compras/:id` con historial, compra ajena → 403, organizador en `GET /compras` → 403, contra el contrato
+- [ ] T061 [P] [US4] Test de integración `backend/test/integration/compras.listar.test.js`: `GET /compras` solo propias y más recientes primero, `GET /compras/:id` con historial, compra ajena → 403, organizador en `GET /compras` → 403, un `compraId` que no es UUID → 400, contra el contrato
 - [ ] T062 [P] [US4] Test `mobile/__tests__/comprador/misCompras.test.js`: estado diferenciado, días restantes solo en CONFIRMADAS, "hoy", "Evento realizado" y estado vacío
 
 ### Implementación
 
 - [ ] T063 [US4] Extender `backend/src/domain/compra.js` (`diasParaEvento`, `eventoRealizado`) y `backend/src/services/compras.service.js` (`listarMias`, `detalle` con verificación de participante) y las rutas `GET /compras` y `GET /compras/:compraId`, hasta pasar T060 y T061
-- [ ] T064 [US4] Crear `mobile/src/components/TarjetaCompra.js` y `mobile/src/app/(comprador)/mis-compras.js`, y mostrar estado y días en `mobile/src/app/compra/[id].js`, hasta pasar T062
+- [ ] T064 [US4] Crear `mobile/src/components/TarjetaCompra.js` y `mobile/src/app/(comprador)/mis-compras.js` (y su tab), y mostrar estado y días en `mobile/src/app/compra/[id].js`, hasta pasar T062
 - [ ] T065 [US4] Test E2E `backend/test/e2e/p1.comprar-pagar.e2e.test.js` con el servidor real: organizador crea evento → comprador busca → compra → pago rechazado → pago aprobado → "Mis compras" muestra CONFIRMADA con días restantes
 
 **Checkpoint (MVP)**: las 4 historias P1 completas = el flujo comprar → pagar demostrable. Commit de hito.
@@ -316,7 +316,7 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 ### Implementación
 
 - [ ] T094 [US10] Implementar favoritos en `backend/src/repository/usuarios.repository.js` (data-model.md · `Usuario.favoritos` como conjunto sin duplicados), `backend/src/services/favoritos.service.js`, `backend/src/controllers/favoritos.controller.js` y `backend/src/routes/favoritos.routes.js` (`GET /favoritos`, `PUT` y `DELETE /favoritos/:eventoId`), y completar `esFavorito` en `eventos.service.js`, hasta pasar T092
-- [ ] T095 [P] [US10] Crear `mobile/src/components/BotonFavorito.js` y `mobile/src/app/(comprador)/favoritos.js`
+- [ ] T095 [P] [US10] Crear `mobile/src/components/BotonFavorito.js` y `mobile/src/app/(comprador)/favoritos.js` (y su tab)
 - [ ] T096 [US10] Integrar `BotonFavorito` en `mobile/src/components/TarjetaEvento.js` y `mobile/src/app/evento/[id].js`, hasta pasar T093
 
 **Checkpoint**: las 10 historias completas. Commit de hito.
@@ -335,7 +335,7 @@ escriben antes de la implementación y deben verse fallar (Red) antes de pasar a
 - [ ] T102 [P] Actualizar `.claude/CLAUDE.md` con comandos, arquitectura en capas, enlace a la constitution y reglas de commit (una línea, sin `Co-Authored-By`, por hito)
 - [ ] T103 Pasada de calidad: `npm run lint` y `npm run format` en ambos paquetes sin errores, y `npm test` + `npm run test:e2e` en verde
 - [ ] T104 **(manual)** Recorrer los 12 escenarios de [quickstart.md](quickstart.md) §5 en el celular y corregir lo que falle
-- [ ] T105 Completar `docs/ai-log.md` con las decisiones tomadas durante la implementación y la sección de reflexión sobre IA (ventajas, desventajas, dificultades, aprendizajes) para la conclusión del video; el guion del video queda en `.local/guion-video.md` (no se sube al repo)
+- [ ] T105 Cerrar `docs/ai-log.md` (las decisiones ya se registraron en cada checkpoint) con la sección de reflexión sobre IA (ventajas, desventajas, dificultades, aprendizajes) para la conclusión del video; el guion del video queda en `.local/guion-video.md` (no se sube al repo)
 
 ---
 
@@ -400,6 +400,7 @@ Carril mobile:  T057 → T058 → T059   (usa el backend real con el seed base o
 ### Notas
 
 - **Commits**: uno por fase o historia completada (una línea, sin `Co-Authored-By`, autoría del autor); el hook `post-commit` actualiza CodeGraph.
+- **Registro de IA (constitution VI)**: en cada checkpoint, antes del commit, agregar a `docs/ai-log.md` las decisiones tomadas y las observaciones sobre el uso de IA de esa fase (aciertos, errores detectados, correcciones). No se acumula para el final.
 - Verificar que los tests fallen antes de implementar; no se da por terminada una tarea con tests en rojo.
 - Evitar tareas vagas, conflictos de archivo entre tareas [P] y dependencias entre historias que rompan su independencia.
 - Opcional si sobra tiempo: skills propias del proyecto con skill-creator (`ticketit-domain-rules`, `ticketit-api-conventions`, `ticketit-ui-conventions`) y pruebas de interfaz con Maestro.

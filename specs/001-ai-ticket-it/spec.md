@@ -322,6 +322,8 @@ la lista se actualiza.
 - Una compra PENDIENTE expira mientras el comprador está por pagar: el pago se rechaza porque la compra ya
   está CANCELADA.
 - El pago de una compra ya CONFIRMADA, CANCELADA, REEMBOLSADA o UTILIZADA se rechaza.
+- Una compra PENDIENTE cuyo plazo de 15 minutos ya venció se considera vencida aunque el proceso automático
+  todavía no la haya cancelado: el pago se rechaza y la compra pasa a CANCELADA en ese momento.
 - El comprador cancela justo en el instante del límite (exactamente 30 minutos antes): la regla es
   determinista; se considera que a menos de 30 minutos, o exactamente a 30, ya no se puede cancelar.
 - Un evento cuya fecha ya pasó deja de aceptar compras, aunque tenga cupo.
@@ -417,7 +419,7 @@ la lista se actualiza.
 - **FR-023**: Cada compra MUST tener una conversación entre su comprador y el organizador del evento, donde
   ambos pueden enviar mensajes en cualquier estado de la compra.
 - **FR-024**: Los mensajes MUST mostrar autor y hora, y la conversación MUST actualizarse sola de forma
-  periódica con un retraso no mayor a unos pocos segundos.
+  periódica con un retraso no mayor a 10 segundos (SC-006).
 - **FR-025**: El sistema MUST rechazar mensajes vacíos y el acceso al chat de personas que no son parte de
   la compra.
 
@@ -452,7 +454,7 @@ la lista se actualiza.
   conversación.
 - **CambioEstadoCompra**: registro de cada cambio de estado de una compra: estado, quién y cuándo.
 - **Mensaje**: texto enviado dentro de una compra por su comprador o por el organizador, con hora de envío.
-- **Resena**: calificación de un comprador sobre un evento tras una compra UTILIZADA: puntaje entero de 1 a
+- **Resenia**: calificación de un comprador sobre un evento tras una compra UTILIZADA: puntaje entero de 1 a
   5 y comentario; una por compra. Alimenta el puntaje del organizador.
 
 ## Success Criteria *(mandatory)*
