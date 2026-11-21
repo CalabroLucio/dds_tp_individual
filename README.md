@@ -17,8 +17,7 @@ reembolso, reseñan y guardan favoritos.
 
 Este repositorio es el Trabajo Práctico Individual de Desarrollo con IA (Desarrollo de Software, UTN FRBA, 2.º
 cuatrimestre 2026). Más allá de la aplicación, el objetivo fue usar la IA como herramienta principal **con
-criterio**: cada decisión está justificada, cada afirmación se puede verificar con una prueba, y los errores de la IA
-quedaron registrados junto con cómo se detectaron.
+criterio**: cada decisión está justificada y cada afirmación se puede verificar con una prueba.
 
 ---
 
@@ -139,21 +138,6 @@ escribir código se produjeron y revisaron estos artefactos (todos en [`specs/00
 - **Decisiones humanas**: las reglas de negocio abiertas, el diseño visual y el alcance los decidió el autor; la IA
   propuso opciones con sus ventajas y desventajas.
 - **Registro de cada paso** en [`docs/ai-log.md`](docs/ai-log.md).
-
-### 3.3 Errores de la IA y cómo se detectaron
-
-| Error                                                                                          | Cómo se detectó                                     | Corrección                                                                         |
-| ---------------------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Recomendó TypeScript y Vitest sin mirar el TP anterior                                         | Revisión del contexto real del proyecto             | Se pasó a JavaScript y Jest, como el TP grupal                                     |
-| Sugirió un comando inexistente (`claude mcp show`)                                             | Falló al ejecutarlo                                 | Se usó el comando correcto según la documentación                                  |
-| El tope de 10 entradas figuraba como error 400 en el modelo y 409 en el contrato               | El análisis cruzado de Spec Kit, antes de programar | Se unificó en 409, que es lo que define el contrato                                |
-| Incluyó en un commit un archivo de 200 MB (el instalador de Expo Go)                           | Revisión del commit antes de subirlo                | Se reescribió el commit y se agregó la regla al `.gitignore`                       |
-| Suponía versiones viejas: Expo SDK 58 contra 57 y Testing Library v14, donde todo es asíncrono | Consulta a la documentación y pruebas fallando      | Se fijó el SDK 57 y se adaptaron todas las pruebas                                 |
-| Un test avanzaba el reloj 100 minutos y hacía vencer una compra pendiente                      | El test falló                                       | Se corrigió el test: el código se comportaba bien                                  |
-| El celular no llegaba al backend aunque la red estaba bien configurada                         | Diagnóstico de la configuración de Windows          | El firewall de Hyper-V bloqueaba todo; se abrieron solo los dos puertos necesarios |
-
-También quedaron registrados dos desvíos menores de test-first: en dos casos las pruebas se escribieron antes pero
-no se vieron fallar, porque la lógica ya existía.
 
 ---
 
