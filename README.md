@@ -6,165 +6,258 @@
   <img alt="Node 24" src="https://img.shields.io/badge/Node-24-339933?logo=node.js&logoColor=white">
   <img alt="Express 5" src="https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white">
   <img alt="Expo SDK 57" src="https://img.shields.io/badge/Expo-SDK%2057-000020?logo=expo&logoColor=white">
-  <img alt="React Native" src="https://img.shields.io/badge/React%20Native-0.86-61DAFB?logo=react&logoColor=black">
   <img alt="OpenAPI 3.1" src="https://img.shields.io/badge/OpenAPI-3.1-6BA539?logo=openapiinitiative&logoColor=white">
-  <img alt="Tests" src="https://img.shields.io/badge/tests-252%20en%20verde-6BD43F">
-  <img alt="Spec Kit" src="https://img.shields.io/badge/Spec--Driven-Spec%20Kit-0E0F12">
+  <img alt="Pruebas" src="https://img.shields.io/badge/pruebas-252%20en%20verde-6BD43F">
+  <img alt="Casos de uso" src="https://img.shields.io/badge/casos%20de%20uso-12%2F12-6BD43F">
 </p>
 
-<p align="center">
-  <b>Plataforma móvil de venta de entradas para eventos.</b><br>
-  Los organizadores publican eventos con distintos tipos de entrada; los compradores buscan, compran, pagan,<br>
-  chatean con el organizador, cancelan con reembolso, reseñan y guardan favoritos.
-</p>
+**AI Ticket It** es una plataforma móvil de venta de entradas: los organizadores publican eventos con distintos tipos
+de entrada y los compradores buscan, compran, pagan, siguen su compra, chatean con el organizador, cancelan con
+reembolso, reseñan y guardan favoritos.
+
+Este repositorio es el Trabajo Práctico Individual de Desarrollo con IA (Desarrollo de Software, UTN FRBA, 2.º
+cuatrimestre 2026). Más allá de la aplicación, el objetivo fue usar la IA como herramienta principal **con
+criterio**: cada decisión está justificada, cada afirmación se puede verificar con una prueba, y los errores de la IA
+quedaron registrados junto con cómo se detectaron.
 
 ---
 
-## ✨ Qué hace
+## Índice
 
-| Comprador                                                                                       | Organizador                                                                                        |
-| ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| 🔎 Busca eventos por texto o categoría, filtra por precio y ordena por fecha, precio o puntaje  | 🎫 Publica eventos con varios tipos de entrada (General, Platea, VIP…), cada uno con precio y cupo |
-| 🛒 Compra eligiendo tipo y cantidad, sin superar el cupo                                        | 📊 Ve las ventas de cada evento y la disponibilidad por tipo                                       |
-| 💳 Paga con un pago simulado (con una tarjeta que siempre se rechaza, para probar el reintento) | ✅ Marca entradas como utilizadas al llegar el evento                                              |
-| 🎟️ Sigue sus compras como entradas digitales, con los días que faltan                           | 💬 Responde consultas por el chat de cada compra                                                   |
-| ↩️ Cancela con reembolso hasta 30 minutos antes                                                 | ⭐ Construye su reputación con las reseñas de sus eventos                                          |
-| ⭐ Reseña después de asistir · ❤️ Guarda favoritos                                              |                                                                                                    |
+1. [Cumplimiento de la consigna](#1-cumplimiento-de-la-consigna)
+2. [Decisiones y su justificación](#2-decisiones-y-su-justificación)
+3. [Cómo se trabajó con IA](#3-cómo-se-trabajó-con-ia)
+4. [Calidad verificable](#4-calidad-verificable)
+5. [Arquitectura](#5-arquitectura)
+6. [Cómo ejecutarlo](#6-cómo-ejecutarlo)
+7. [Limitaciones conocidas y mejoras futuras](#7-limitaciones-conocidas-y-mejoras-futuras)
 
-## 🧠 Cómo se construyó
+---
 
-Este TP explora el **desarrollo de software con IA como herramienta principal**, con criterio y verificación:
+## 1. Cumplimiento de la consigna
 
-1. **Spec-Driven Development** con [Spec Kit](https://github.com/github/spec-kit): constitution → spec → clarify →
-   plan → tasks → analyze → implement. Todos los artefactos están en [`specs/001-ai-ticket-it/`](specs/001-ai-ticket-it/).
-2. **Contrato primero**: la API se definió en [OpenAPI 3.1](specs/001-ai-ticket-it/contracts/openapi.yaml) antes de
-   escribir código, y cada respuesta de los tests se valida contra ese contrato.
-3. **Test-first**: cada historia empezó con sus tests en rojo.
-4. **Registro de decisiones y del uso de IA** en [`docs/ai-log.md`](docs/ai-log.md): aciertos, errores detectados,
-   correcciones y la reflexión final.
-5. **Sistema de diseño como skill**: el estilo de la app está documentado en
-   [`.claude/skills/ticketit-ui/`](.claude/skills/ticketit-ui/SKILL.md) para que toda pantalla nueva lo respete.
+### Requisitos técnicos
 
-## 🏗️ Arquitectura
+| Requisito                               | Cómo se cumple                                                                           |
+| --------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Back-End con Node + Express             | Node 24 y Express 5, en capas: rutas → controladores → servicios → dominio y repositorio |
+| Front-End con React Native              | React Native con Expo SDK 57 y expo-router                                               |
+| Ejecución local en un dispositivo móvil | Probado en un celular Android con Expo Go, contra el backend en la PC por red local      |
+| Persistencia en memoria                 | Repositorios sobre `Map`; al arrancar se cargan datos de ejemplo con fechas relativas    |
+| Sin herramientas pagas                  | Todo el stack es libre o gratuito (Expo Go, Paper, TanStack Query, Jest, Swagger)        |
+
+### Casos de uso → dónde están implementados
+
+Cada caso de uso de la consigna se convirtió en una historia con escenarios de aceptación
+([spec](specs/001-ai-ticket-it/spec.md)) y tiene pruebas automáticas.
+
+| #   | Caso de uso (consigna)                                                         | API                                 | Pantalla           | Historia |
+| --- | ------------------------------------------------------------------------------ | ----------------------------------- | ------------------ | -------- |
+| 1   | Ver mis compras, su estado y los días que faltan si está confirmada            | `GET /compras`                      | Mis compras        | 4        |
+| 2   | El organizador ve las compras de un evento y las entradas disponibles por tipo | `GET /eventos/{id}/compras`         | Ventas del evento  | 7        |
+| 3   | Buscar eventos por texto o explorarlos por categoría                           | `GET /eventos?q=&categoriaId=`      | Explorar           | 2        |
+| 4   | Crear un evento con distintos tipos de entrada, precio y cupo                  | `POST /eventos`                     | Nuevo evento       | 1        |
+| 5   | El comprador envía mensajes en el chat de la compra                            | `POST /compras/{id}/mensajes`       | Chat               | 8        |
+| 6   | El organizador responde mensajes en el chat                                    | `GET`/`POST /compras/{id}/mensajes` | Chat               | 8        |
+| 7   | Cancelar una compra para obtener el reembolso                                  | `POST /compras/{id}/cancelacion`    | Mi entrada         | 5        |
+| 8   | Cancelar solo si no está utilizada y el evento no ocurrió                      | Regla de dominio (ver decisión 2.1) | Mi entrada         | 5        |
+| 9   | Puntuar y comentar una vez utilizada la entrada                                | `POST /compras/{id}/resenia`        | Mi entrada         | 9        |
+| 10  | Ver las reseñas anteriores en los eventos del organizador                      | `GET /eventos/{id}`                 | Detalle del evento | 9        |
+| 11  | Ordenar por precio, fecha y puntaje del organizador                            | `GET /eventos?orden=`               | Explorar           | 2        |
+| 12  | Comprar eligiendo tipo y cantidad sin superar el cupo                          | `POST /compras`                     | Detalle del evento | 3        |
+| +   | Guardar eventos favoritos (está en el contexto y en el diagrama, no en los 12) | `PUT`/`DELETE /favoritos/{id}`      | Favoritos          | 10       |
+
+### Flujo elegido para el video
+
+**Comprar → pagar → chat → cancelar o reseñar.** Recorre el back, el front y casi toda la máquina de estados de la
+compra. Está cubierto de punta a punta por una prueba E2E contra el servidor real.
+
+---
+
+## 2. Decisiones y su justificación
+
+### 2.1 Reglas que la consigna no define
+
+La consigna deja abiertas varias reglas. Las definimos explícitamente en la etapa de clarificación de la
+especificación, en lugar de dejarlas implícitas en el código.
+
+| Pregunta abierta                    | Decisión                                                                                                          | Por qué                                                                                                                                                                                                                                                                                                                           |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ¿Hasta cuándo se puede cancelar?    | Hasta **30 minutos antes** del evento (configurable)                                                              | La consigna dice "mientras no esté utilizada y el evento no se haya realizado", pero no define cuándo una entrada pasa a utilizada. Atando ambas reglas al mismo instante, **nunca se superponen**: hasta los 30 minutos se puede cancelar y desde ahí se puede marcar como utilizada. Es un desvío consciente y está documentado |
+| ¿Cómo pasa una compra a UTILIZADA?  | La marca el organizador desde 30 minutos antes; si nadie lo hace, el sistema la marca **24 h después** del inicio | Ninguna compra queda confirmada para siempre y se habilitan las reseñas                                                                                                                                                                                                                                                           |
+| ¿Qué pasa con una compra sin pagar? | Vence a los **15 minutos** y libera el cupo                                                                       | Evita que alguien bloquee entradas sin pagar                                                                                                                                                                                                                                                                                      |
+| ¿Hay tope por compra?               | **10 entradas** por compra                                                                                        | Evita acaparar un tipo de entrada; es el patrón habitual de las ticketeras                                                                                                                                                                                                                                                        |
+| ¿Hasta cuándo se compra?            | Hasta el inicio del evento; con menos de 30 minutos, la app avisa que la compra no se podrá cancelar              | No se pierden ventas de último momento y el comprador decide informado                                                                                                                                                                                                                                                            |
+| ¿Cómo se simula el pago?            | El comprador elige un medio de prueba; "Tarjeta rechazada" siempre falla y los demás siempre aprueban             | Es determinista, como las tarjetas de prueba de una pasarela real: sirve para los tests y para mostrar el reintento en el video                                                                                                                                                                                                   |
+
+### 2.2 Decisiones de diseño técnico
+
+| Decisión                                                                                                                                                      | Alternativas descartadas                                          | Por qué                                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Reserva de cupo atómica**: el chequeo y la reserva ocurren en una función síncrona del repositorio, sin `await` en el medio                                 | Recontar el cupo antes y después de guardar y deshacer si se pasó | Node ejecuta un solo hilo: una sección sin `await` no se puede intercalar. Es más simple y no necesita deshacer nada. Con una base de datos real sería un `UPDATE` condicional o una transacción |
+| **El cupo no se guarda: se calcula** a partir de las compras activas                                                                                          | Un contador que se suma y resta                                   | No hay contador que se pueda desincronizar: "liberar cupo" es solo cambiar el estado de la compra                                                                                                |
+| **Las reglas viven solo en el dominio**: el backend devuelve qué acciones están permitidas (`puedePagar`, `puedeCancelar`…), los días que faltan y los avisos | Repetir las reglas en la app                                      | El front solo muestra o esconde botones: una regla nunca puede quedar distinta en los dos lados                                                                                                  |
+| **Contrato OpenAPI primero**, escrito a mano antes del código                                                                                                 | Generar la documentación a partir del código                      | El contrato dirige el código y no al revés; cada respuesta de las pruebas se valida contra él                                                                                                    |
+| **Reloj inyectable**: el dominio recibe "ahora" como parámetro                                                                                                | Usar `Date.now()`                                                 | Los plazos (15 minutos, 30 minutos, 24 horas) se prueban de forma exacta, sin esperar ni usar temporizadores falsos                                                                              |
+| **Polling cada 3 s** para el chat                                                                                                                             | WebSockets                                                        | Cumple el objetivo de que el mensaje se vea en menos de 10 s, con mucha menos complejidad                                                                                                        |
+| **Expo** sobre React Native                                                                                                                                   | React Native CLI con Android Studio                               | Sigue siendo React Native, pero evita instalar el SDK de Android y compilar en WSL                                                                                                               |
+| **JavaScript** con validación Zod en los bordes                                                                                                               | TypeScript                                                        | Continuidad con el TP grupal y una tecnología nueva por vez (React Native); Zod valida en tiempo de ejecución lo que entra y lo que sale                                                         |
+
+### 2.3 Diferencias con el diagrama tentativo
+
+| Diagrama                     | Implementación                            | Motivo                                                               |
+| ---------------------------- | ----------------------------------------- | -------------------------------------------------------------------- |
+| `Usuario` sin rol            | `Usuario.rol`: COMPRADOR u ORGANIZADOR    | Los casos de uso están escritos por rol                              |
+| `Resenia.puntuacion: Double` | Puntaje entero de 1 a 5                   | Más claro para el usuario; el promedio del organizador sí es decimal |
+| `Resenia` asociada al evento | Una reseña por **compra** utilizada       | Garantiza que solo opine quien asistió, y una sola vez               |
+| `Evento.tuPrecioEstaEntre()` | Filtro por rango de precio en la búsqueda | Se respetó la idea del método como funcionalidad                     |
+
+---
+
+## 3. Cómo se trabajó con IA
+
+### 3.1 Proceso
+
+Se usó **Spec-Driven Development** con [Spec Kit](https://github.com/github/spec-kit) y Claude Code. Antes de
+escribir código se produjeron y revisaron estos artefactos (todos en [`specs/001-ai-ticket-it/`](specs/001-ai-ticket-it/)):
+
+| Etapa          | Resultado                                                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Constitution   | [Principios no negociables](.specify/memory/constitution.md): capas, test-first, reglas solo en el dominio, contrato primero |
+| Especificación | 10 historias con 61 escenarios de aceptación y 29 requisitos funcionales                                                     |
+| Clarificación  | 4 preguntas sobre reglas que la consigna no define (sección 2.1)                                                             |
+| Plan           | Investigación con alternativas, modelo de datos y contrato OpenAPI                                                           |
+| Tareas         | 105 tareas ordenadas, con las pruebas antes de la implementación                                                             |
+| Análisis       | Revisión cruzada de spec, plan y tareas: encontró 12 inconsistencias, que se corrigieron antes de programar                  |
+
+### 3.2 Controles para no confiar a ciegas
+
+- **Pruebas antes que código**: cada historia empezó con sus pruebas en rojo; "terminado" significa "en verde".
+- **Contrato verificado**: las respuestas reales se validan automáticamente contra el OpenAPI.
+- **Documentación oficial, no memoria del modelo**: versiones y APIs de Expo, React Native Testing Library y WSL
+  se consultaron en la documentación vigente antes de usarlas.
+- **Decisiones humanas**: las reglas de negocio abiertas, el diseño visual y el alcance los decidió el autor; la IA
+  propuso opciones con sus ventajas y desventajas.
+- **Registro de cada paso** en [`docs/ai-log.md`](docs/ai-log.md).
+
+### 3.3 Errores de la IA y cómo se detectaron
+
+| Error                                                                                          | Cómo se detectó                                     | Corrección                                                                         |
+| ---------------------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Recomendó TypeScript y Vitest sin mirar el TP anterior                                         | Revisión del contexto real del proyecto             | Se pasó a JavaScript y Jest, como el TP grupal                                     |
+| Sugirió un comando inexistente (`claude mcp show`)                                             | Falló al ejecutarlo                                 | Se usó el comando correcto según la documentación                                  |
+| El tope de 10 entradas figuraba como error 400 en el modelo y 409 en el contrato               | El análisis cruzado de Spec Kit, antes de programar | Se unificó en 409, que es lo que define el contrato                                |
+| Incluyó en un commit un archivo de 200 MB (el instalador de Expo Go)                           | Revisión del commit antes de subirlo                | Se reescribió el commit y se agregó la regla al `.gitignore`                       |
+| Suponía versiones viejas: Expo SDK 58 contra 57 y Testing Library v14, donde todo es asíncrono | Consulta a la documentación y pruebas fallando      | Se fijó el SDK 57 y se adaptaron todas las pruebas                                 |
+| Un test avanzaba el reloj 100 minutos y hacía vencer una compra pendiente                      | El test falló                                       | Se corrigió el test: el código se comportaba bien                                  |
+| El celular no llegaba al backend aunque la red estaba bien configurada                         | Diagnóstico de la configuración de Windows          | El firewall de Hyper-V bloqueaba todo; se abrieron solo los dos puertos necesarios |
+
+También quedaron registrados dos desvíos menores de test-first: en dos casos las pruebas se escribieron antes pero
+no se vieron fallar, porque la lógica ya existía.
+
+---
+
+## 4. Calidad verificable
+
+| Suite                                      | Comando                             | Pruebas     |
+| ------------------------------------------ | ----------------------------------- | ----------- |
+| Backend: unitarias, integración y contrato | `npm test --prefix backend`         | 190         |
+| Backend: E2E contra el servidor real       | `npm run test:e2e --prefix backend` | 4           |
+| App: pantallas y componentes               | `npm test --prefix mobile`          | 58          |
+| Estilo                                     | `npm run lint`                      | sin errores |
+
+Pruebas destacadas:
+
+- **Concurrencia**: 50 compras simultáneas sobre un cupo de 10 dan exactamente 10 aceptadas y 40 rechazadas. Hay
+  además una **prueba de control**: una versión "ingenua" con `await` entre el chequeo y la reserva vende de más, lo
+  que demuestra que la prueba detectaría el error.
+- **Cobertura del contrato**: las 21 operaciones del OpenAPI están implementadas y sus respuestas lo cumplen.
+- **Flujo del video de punta a punta**, con el servidor real y los datos de ejemplo.
+- **Plazos exactos**: con 30 minutos justos ya no se puede cancelar y sí marcar como utilizada; a los 15 minutos
+  justos vence una compra sin pagar.
+
+---
+
+## 5. Arquitectura
 
 ```mermaid
 flowchart LR
-    subgraph Mobile["📱 Mobile · Expo SDK 57"]
-        UI["Pantallas<br/>expo-router + Paper"] --> Q["TanStack Query"]
-        Q --> C["Cliente HTTP<br/>+ Zod"]
+    subgraph App["App móvil · Expo SDK 57"]
+        P["Pantallas<br/>expo-router + Paper"] --> Q["TanStack Query"]
+        Q --> C["Cliente HTTP<br/>+ validación Zod"]
     end
-    subgraph API["🖥️ Backend · Express 5"]
-        R["Routes"] --> M["Middleware<br/>JWT · rol · Zod"]
-        M --> CT["Controllers"]
-        CT --> S["Services"]
-        S --> D["Domain<br/>reglas de negocio"]
-        S --> RP["Repository<br/>en memoria"]
-        J["Job periódico"] --> D
+    subgraph Servidor["Backend · Express 5"]
+        R["Rutas"] --> M["Middleware<br/>JWT · rol · Zod"]
+        M --> CT["Controladores"]
+        CT --> S["Servicios"]
+        S --> D["Dominio<br/>reglas de negocio"]
+        S --> RP["Repositorio<br/>en memoria"]
+        J["Proceso periódico"] --> D
     end
     C -- "REST + JWT" --> R
-    OA[["OpenAPI 3.1"]] -. contrato .- C
-    OA -. contrato .- R
+    OA[["Contrato OpenAPI 3.1"]] -. define .- C
+    OA -. define .- R
 ```
 
-- **Las reglas viven solo en el dominio.** El front recibe todo calculado (`acciones`, `diasParaEvento`,
-  `avisoNoCancelable`) y solo muestra lo que el backend habilita.
-- **Reserva de cupo atómica**: una sección síncrona del repositorio. Con 50 compras simultáneas sobre cupo 10 se
-  aceptan exactamente 10 (y hay un test de control que demuestra que una versión con `await` vendería de más).
-- **Reloj inyectable**: el dominio nunca llama a `Date.now()`; los plazos se prueban de forma determinista.
-
-## 🔄 Ciclo de vida de una compra
+### Ciclo de vida de una compra
 
 ```mermaid
 stateDiagram-v2
     direction LR
-    [*] --> PENDIENTE: compra (reserva cupo)
+    [*] --> PENDIENTE: compra (reserva el cupo)
     PENDIENTE --> CONFIRMADA: pago aprobado
-    PENDIENTE --> CANCELADA: cancela el comprador<br/>o vence a los 15 min
-    CONFIRMADA --> REEMBOLSADA: cancela el comprador<br/>(hasta 30 min antes)
-    CONFIRMADA --> UTILIZADA: la marca el organizador<br/>o el sistema 24 h después
+    PENDIENTE --> CANCELADA: la cancela el comprador<br/>o vence a los 15 min
+    CONFIRMADA --> REEMBOLSADA: la cancela el comprador<br/>(hasta 30 min antes)
+    CONFIRMADA --> UTILIZADA: la marca el organizador<br/>o el sistema a las 24 h
     CANCELADA --> [*]
     REEMBOLSADA --> [*]
     UTILIZADA --> [*]
 ```
 
-Cada cambio de estado queda registrado con **quién** lo hizo y **cuándo**.
+Cada cambio de estado queda registrado con quién lo hizo (comprador, organizador o sistema) y cuándo.
 
-## 🧰 Stack
+### Interfaz
 
-| Módulo        | Tecnologías                                                                                       |
-| ------------- | ------------------------------------------------------------------------------------------------- |
-| **Back-End**  | Node 24 · Express 5 · JavaScript ESM · Zod · JWT + bcryptjs · persistencia en memoria             |
-| **Front-End** | React Native (Expo SDK 57) · expo-router · TanStack Query · React Native Paper · Poppins          |
-| **Contrato**  | OpenAPI 3.1 escrito a mano, servido con Swagger UI en `/api-docs`                                 |
-| **Pruebas**   | Jest · supertest · Ajv (validación contra el contrato) · jest-expo · React Native Testing Library |
-
-Todo es gratuito y corre de forma local; la app se usa desde un celular Android con Expo Go.
-
-## 🚀 Cómo correrlo
-
-> Guía completa (red WSL ↔ celular, firewall, Expo Go y escenarios de validación):
-> [`specs/001-ai-ticket-it/quickstart.md`](specs/001-ai-ticket-it/quickstart.md)
-
-```bash
-# 1. Dependencias
-npm install && npm install --prefix backend && npm install --prefix mobile
-
-# 2. Backend → http://localhost:3000  ·  Swagger → http://localhost:3000/api-docs
-npm run dev:backend
-
-# 3. App (con mobile/.env → EXPO_PUBLIC_API_URL=http://<IP-de-la-PC>:3000)
-npm run start:mobile      # escanear el QR con Expo Go (SDK 57)
-```
-
-### 👤 Usuarios de prueba — contraseña `demo1234`
-
-| Rol          | Email                                                            |
-| ------------ | ---------------------------------------------------------------- |
-| Organizadora | `martina@tickets.test`                                           |
-| Organizador  | `joaquin@tickets.test`                                           |
-| Compradores  | `ana@tickets.test` · `bruno@tickets.test` · `carla@tickets.test` |
-
-Al arrancar se cargan datos de ejemplo **con fechas relativas a ese momento**: un evento que empieza en ~20 minutos,
-uno mañana, uno en 20 días, eventos pasados con reseñas, compras en todos los estados y un chat iniciado.
-
-## ✅ Pruebas
-
-| Suite                                      | Comando                             | Cantidad |
-| ------------------------------------------ | ----------------------------------- | -------- |
-| Backend: unitarias, integración y contrato | `npm test --prefix backend`         | 190      |
-| Backend: E2E contra el servidor real       | `npm run test:e2e --prefix backend` | 4        |
-| Mobile: pantallas y componentes            | `npm test --prefix mobile`          | 58       |
-| Lint                                       | `npm run lint`                      | —        |
-
-Los E2E recorren el flujo completo de la demo: comprar → pago rechazado → reintento → chat → cancelar con reembolso,
-y comprar → marcar como utilizada → reseñar.
-
-## 📁 Estructura
-
-```text
-backend/    API REST en capas: routes → controllers → services → domain / repository
-            (+ schemas Zod, middleware, errors, jobs, seed)
-mobile/     App Expo: src/app (pantallas por rol), src/api, src/hooks, src/components, src/theme
-specs/      Spec Kit: spec, plan, research, data-model, contrato OpenAPI, tasks, quickstart
-docs/       Registro de decisiones y del uso de IA
-.specify/   Constitution del proyecto (principios no negociables)
-```
-
-## 📌 Decisiones destacadas
-
-| Decisión                                  | Por qué                                                                                                                 |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Límite de cancelación de 30 min           | La consigna no define cuándo una entrada pasa a utilizada; atar ambas reglas al mismo instante evita que se superpongan |
-| UTILIZADA manual o automática a las 24 h  | Ninguna compra queda confirmada para siempre y se habilitan las reseñas                                                 |
-| Pago simulado determinista                | Como las tarjetas de prueba de una pasarela real: el resultado depende solo del medio elegido                           |
-| Persistencia en memoria con cupo derivado | El cupo no es un contador: se calcula de las compras activas, así liberar cupo es solo cambiar el estado                |
-| Expo + Expo Go                            | React Native sin Android Studio ni builds nativos en WSL                                                                |
-
-Todas las decisiones, con alternativas descartadas, están en [`docs/ai-log.md`](docs/ai-log.md) y
-[`specs/001-ai-ticket-it/research.md`](specs/001-ai-ticket-it/research.md).
+La app tiene un sistema de diseño propio (estilo nocturno, tarjetas con forma de entrada troquelada, tipografía
+Poppins), documentado como una _skill_ del proyecto en [`.claude/skills/ticketit-ui/`](.claude/skills/ticketit-ui/SKILL.md)
+para que cualquier pantalla nueva lo respete.
 
 ---
 
-<p align="center">
-  Trabajo Práctico Individual de Desarrollo con IA · Desarrollo de Software · UTN FRBA · 2.º cuatrimestre 2026
-</p>
+## 6. Cómo ejecutarlo
+
+> La guía completa (red entre WSL y el celular, firewall, Expo Go y escenarios de validación) está en
+> [`specs/001-ai-ticket-it/quickstart.md`](specs/001-ai-ticket-it/quickstart.md).
+
+```bash
+# Dependencias
+npm install && npm install --prefix backend && npm install --prefix mobile
+
+# Backend: http://localhost:3000 · documentación interactiva: http://localhost:3000/api-docs
+npm run dev:backend
+
+# App: crear mobile/.env con EXPO_PUBLIC_API_URL=http://<IP-de-la-PC>:3000
+npm run start:mobile      # y escanear el QR con Expo Go (SDK 57)
+```
+
+**Usuarios de prueba** (contraseña `demo1234`): organizadores `martina@tickets.test` y `joaquin@tickets.test`;
+compradores `ana@tickets.test`, `bruno@tickets.test` y `carla@tickets.test`.
+
+Los datos de ejemplo se generan al arrancar, con fechas relativas a ese momento: un evento que empieza en unos 20
+minutos, uno mañana, uno en 20 días, eventos pasados con reseñas, compras en todos los estados y un chat iniciado.
+
+---
+
+## 7. Limitaciones conocidas y mejoras futuras
+
+| Limitación                                                                                         | Mejora posible                                                          |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Los datos se pierden al reiniciar (lo pide la consigna)                                            | Base de datos; la reserva atómica pasaría a ser un `UPDATE` condicional |
+| No se modelan eventos cancelados o cortados a mitad: sus compras pasarían a utilizadas a las 24 h  | Que el organizador pueda cancelar el evento con reembolso masivo        |
+| No hay registro de usuarios ni edición de eventos                                                  | Alta de cuentas y edición con reglas sobre las compras existentes       |
+| El QR de acceso por mail es solo un aviso: no se envían mails                                      | Envío real y validación en la puerta                                    |
+| Las imágenes de los eventos de ejemplo son externas (picsum.photos)                                | Subida de imágenes propias                                              |
+| Las pruebas de la app dejan un aviso de temporizadores abiertos al terminar (no afecta resultados) | Identificar el componente y limpiarlo                                   |
+
+Las decisiones completas, con fechas y alternativas, están en [`docs/ai-log.md`](docs/ai-log.md) y
+[`specs/001-ai-ticket-it/research.md`](specs/001-ai-ticket-it/research.md).
