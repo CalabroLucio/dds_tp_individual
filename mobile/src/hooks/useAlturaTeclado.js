@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Keyboard, Platform } from 'react-native';
 
-// Altura del teclado en Android. Con edge-to-edge la ventana no se achica al abrirlo, así que KeyboardAvoidingView no
-// alcanza: se sube el contenido a mano con esta altura. En iOS se usa KeyboardAvoidingView y esto devuelve 0.
+// Altura del teclado en Android. La ventana ya se achica sola al abrirlo (softwareKeyboardLayoutMode "resize"), así que
+// NO hay que sumar esta altura como relleno (se duplicaría): solo sirve para saber si el teclado está abierto y quitar el
+// margen inferior de la barra de navegación. En iOS se usa KeyboardAvoidingView y esto devuelve 0.
 export function useAlturaTeclado() {
   const [altura, setAltura] = useState(0);
   useEffect(() => {

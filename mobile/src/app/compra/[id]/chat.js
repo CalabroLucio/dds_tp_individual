@@ -18,7 +18,7 @@ export default function PantallaChat() {
 
   return (
     <KeyboardAvoidingView
-      style={[estilos.flex, { paddingBottom: tecladoAndroid > 0 ? tecladoAndroid : bottom }]}
+      style={[estilos.flex, { paddingBottom: tecladoAndroid > 0 ? 0 : bottom }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
