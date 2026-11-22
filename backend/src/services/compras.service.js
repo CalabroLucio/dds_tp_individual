@@ -1,5 +1,4 @@
 import { randomUUID } from 'node:crypto';
-import { compraAbierta } from '../domain/evento.js';
 import {
   crearCompra,
   dentroDelPlazoDeCancelacion,
@@ -10,6 +9,7 @@ import {
   quienDe,
   rotuloEstado,
   transicionar,
+  validarPuedeComprar,
 } from '../domain/compra.js';
 import { MEDIOS_PAGO, procesarPago } from '../domain/pagos.js';
 import { errores } from '../errors/index.js';
@@ -74,19 +74,10 @@ export function crearComprasService({ repos, reloj, reglas, presentacion }) {
       const evento = repos.eventos.porId(eventoId);
       if (!evento) throw errores.noEncontrado('El evento');
 
-      // Roles fijos: un organizador nunca compra; si es su propio evento se le explica el motivo (FR-012).
-      if (usuario.rol !== 'COMPRADOR') {
-        throw evento.organizadorId === usuario.id
-          ? errores.organizadorNoPuedeComprar()
-          : errores.rolNoPermitido();
-      }
-
+      // Las reglas viven en el dominio; el servicio busca los datos y las aplica.
+      validarPuedeComprar({ usuario, evento, cantidad, ahora, reglas });
       const tipoEntrada = evento.tiposEntrada.find((t) => t.id === tipoEntradaId);
       if (!tipoEntrada) throw errores.noEncontrado('El tipo de entrada');
-      if (!compraAbierta(evento, ahora)) throw errores.eventoNoDisponible();
-      if (cantidad > reglas.MAX_ENTRADAS_POR_COMPRA) {
-        throw errores.cantidadExcedeMaximo(reglas.MAX_ENTRADAS_POR_COMPRA);
-      }
 
       const compra = crearCompra({
         id: randomUUID(),

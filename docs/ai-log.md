@@ -162,6 +162,11 @@ Registro vivo para la conclusión del video (ventajas, desventajas, dificultades
 - Detalle técnico: la línea punteada del troquel se dibuja con segmentos porque los bordes `dashed` de un solo lado no se ven bien en Android.
 - Los 58 tests de mobile siguieron en verde con el rediseño (solo un texto pasó de "TOTAL" a "Total" para no romper un test). Backend 190.
 
+### Revisión del autor: reglas de compra al dominio
+- El autor detectó, leyendo `compras.service.js`, que el tope de 10 entradas y la regla "un organizador no compra" estaban escritas dentro del servicio y no en el dominio, a diferencia de cancelar, utilizar y pagar. Contradecía la constitution (principio III) y lo que dice el README. La IA no lo había notado.
+- Se movieron a `validarPuedeComprar` en `domain/compra.js`, con su test unitario (visto fallar antes). El servicio solo busca los datos y la aplica. Efecto menor: ante una solicitud con varios problemas a la vez, ahora se informa primero el de rol, luego evento y luego tope; la búsqueda del tipo de entrada va después.
+- Tests: backend 194 + 4 E2E.
+
 ## Observaciones sobre IA (para la conclusión)
 - La IA verificó datos externos (tags de Spec Kit, comandos de CodeGraph) antes de recomendarlos, y detectó que el MCP hosted de Expo es pago.
 - Error propio detectado: una primera recomendación de TypeScript y Vitest fue corregida al revisar el TP anterior (JS + Jest). Lección: revisar el contexto real del proyecto antes de recomendar.

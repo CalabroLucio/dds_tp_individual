@@ -1,4 +1,5 @@
 import { errores } from '../errors/index.js';
+import { compraAbierta } from './evento.js';
 import { diasCalendario, minutosEntre, sumarHoras, sumarMinutos } from '../utils/fechas.js';
 
 // Máquina de estados de Compra (data-model.md §Máquina de estados; FR-014).
@@ -59,6 +60,20 @@ export function transicionar(compra, hacia, quien, ahora) {
   compra.estado = hacia;
   compra.historial.push({ estado: hacia, quien, fechaHora: ahora });
   return compra;
+}
+
+// Reglas para poder comprar (FR-011 y FR-012). Lanza el error de negocio que corresponde; el servicio solo la aplica.
+// Roles fijos: un organizador nunca compra y, si es su propio evento, se le explica el motivo.
+export function validarPuedeComprar({ usuario, evento, cantidad, ahora, reglas }) {
+  if (usuario.rol !== 'COMPRADOR') {
+    throw evento.organizadorId === usuario.id
+      ? errores.organizadorNoPuedeComprar()
+      : errores.rolNoPermitido();
+  }
+  if (!compraAbierta(evento, ahora)) throw errores.eventoNoDisponible();
+  if (cantidad > reglas.MAX_ENTRADAS_POR_COMPRA) {
+    throw errores.cantidadExcedeMaximo(reglas.MAX_ENTRADAS_POR_COMPRA);
+  }
 }
 
 export const estaVencida = (compra, ahora) =>
