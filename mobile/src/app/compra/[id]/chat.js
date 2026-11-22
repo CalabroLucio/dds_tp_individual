@@ -2,6 +2,7 @@ import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chat } from '../../../components/Chat';
+import { useAlturaTeclado } from '../../../hooks/useAlturaTeclado';
 import { useCompra } from '../../../hooks/useCompras';
 import { useSession } from '../../../session/SessionProvider';
 import { colores } from '../../../theme/tema';
@@ -12,12 +13,13 @@ export default function PantallaChat() {
   const compra = useCompra(id);
   const { usuario } = useSession();
   const { bottom } = useSafeAreaInsets();
+  const tecladoAndroid = useAlturaTeclado();
   const conQuien = usuario?.rol === 'ORGANIZADOR' ? 'el comprador' : 'el organizador';
 
   return (
     <KeyboardAvoidingView
-      style={[estilos.flex, { paddingBottom: bottom }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={[estilos.flex, { paddingBottom: tecladoAndroid > 0 ? tecladoAndroid : bottom }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <Stack.Screen options={{ title: compra.data ? `Chat con ${conQuien}` : 'Chat' }} />

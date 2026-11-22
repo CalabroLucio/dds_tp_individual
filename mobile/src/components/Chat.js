@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
-import { HelperText, IconButton, Text, TextInput } from 'react-native-paper';
+import { FlatList, StyleSheet, TextInput, View } from 'react-native';
+import { HelperText, IconButton, Text } from 'react-native-paper';
 import { useEnviarMensaje, useMensajes, INTERVALO_CHAT_MS } from '../hooks/useMensajes';
 import { useSession } from '../session/SessionProvider';
 import { colores, fuentes, radios } from '../theme/tema';
@@ -65,15 +65,14 @@ export function Chat({ compraId, intervalo = INTERVALO_CHAT_MS }) {
       <View style={estilos.barra}>
         <TextInput
           style={estilos.input}
-          mode="outlined"
-          dense
           placeholder="Escribí un mensaje…"
+          placeholderTextColor={colores.textoSecundario}
           accessibilityLabel="Escribir un mensaje"
           value={texto}
           onChangeText={setTexto}
           maxLength={500}
           multiline
-          outlineStyle={estilos.contornoInput}
+          textAlignVertical="center"
         />
         <IconButton
           icon="send"
@@ -103,7 +102,7 @@ const estilos = StyleSheet.create({
   horaPropia: { color: colores.sobreMarca, opacity: 0.7 },
   barra: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     gap: 4,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -111,6 +110,16 @@ const estilos = StyleSheet.create({
     borderTopColor: colores.borde,
     backgroundColor: colores.superficie,
   },
-  input: { flex: 1, maxHeight: 120, backgroundColor: colores.superficieAlta },
-  contornoInput: { borderRadius: radios.input },
+  input: {
+    flex: 1,
+    minHeight: 46,
+    maxHeight: 120,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: radios.pildora,
+    backgroundColor: colores.superficieAlta,
+    color: colores.texto,
+    fontFamily: fuentes.regular,
+    fontSize: 15,
+  },
 });
